@@ -28,7 +28,7 @@ final class FirmePades implements VerificaFirme
             // Il dizionario della firma è intorno al /ByteRange: si cercano /SubFilter, /Name e /M lì vicino
             $da = max(0, $pos - 4000);
             $dict = substr($pdf, $da, 8000);
-            $sub = preg_match('#/SubFilter\s*/([A-Za-z0-9.\-]+)#', $dict, $x) ? $x[1] : '';
+            $sub = preg_match('#/SubFilter\s*/([A-Za-z0-9._\-]+)#', $dict, $x) ? $x[1] : '';
             $nome = preg_match('#/Name\s*\(([^)]{0,200})\)#', $dict, $x) ? $x[1] : '';
             $data = preg_match('#/M\s*\(D:(\d{14})#', $dict, $x) ? $x[1] : '';
             [$a, $b, $c, $d] = [(int) $m[1][0], (int) $m[2][0], (int) $m[3][0], (int) $m[4][0]];

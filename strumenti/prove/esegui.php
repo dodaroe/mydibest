@@ -1296,6 +1296,16 @@ $pdf_doc = $firma_pades($pdf1, $cert_doc);
 $alterato = $pdf_doc; $alterato[strlen($pdf1) + 20] = 'X';
 [$err_alt, $info_alt] = verifica_pdf_firmato($pdf1, $alterato);
 prova(registra_firma_incarico($conn, $it, 'docente', $firma_pades(str_replace('%%EOF', '%%EOF ', $pdf1), $cert_doc)) !== null && ($err_alt === null ? !empty($info_alt['avviso']) : true), "PDF modificato rifiutato; firma non integra: controllo minimo, passa con un avviso", json_encode([$err_alt, $info_alt['avviso'] ?? null]));
+// E37: una revisione con altro testo aggiunta INSIEME alla firma non passa (il PDF deve avere solo la firma in più); il formato non PAdES si cita per intero
+preg_match('/startxref\s+(\d+)\s+%%EOF\s*$/', $pdf1, $m_sx); preg_match('#/Root (\d+) 0 R#', $pdf1, $m_rt);
+$rev_testo = "900 0 obj\n<< /Type /Annot /Subtype /FreeText /Contents (Testo aggiunto di nascosto) >>\nendobj\n";
+$pdf_con_rev = $pdf1 . $rev_testo . "xref\n900 1\n" . sprintf('%010d', strlen($pdf1)) . " 00000 n \ntrailer\n<< /Size 901 /Root {$m_rt[1]} 0 R /Prev {$m_sx[1]} >>\nstartxref\n" . (strlen($pdf1) + strlen($rev_testo)) . "\n%%EOF\n";
+[$err_rev] = verifica_pdf_firmato($pdf1, $firma_pades($pdf_con_rev, $cert_doc));
+prova($err_rev !== null && str_contains($err_rev, 'altre modifiche') && registra_firma_incarico($conn, $it, 'docente', $firma_pades($pdf_con_rev, $cert_doc)) !== null, "E37: PDF con un'altra revisione aggiunta insieme alla firma rifiutato", (string)$err_rev);
+[$err_ok] = verifica_pdf_firmato($pdf1, $pdf_doc);
+prova($err_ok === null, "E37: il PDF con la sola firma in più passa ancora", (string)$err_ok);
+[$err_fmt] = verifica_pdf_firmato($pdf1, str_replace('/ETSI.CAdES.detached', '/adbe.x509.rsa_sha1', $pdf_doc));
+prova($err_fmt !== null && str_contains($err_fmt, 'adbe.x509.rsa_sha1'), "E37: formato di firma non PAdES citato per intero (adbe.x509.rsa_sha1)", (string)$err_fmt);
 prova(analizza_firma_pdf($pdf_doc)['integra'] === true && analizza_firma_pdf($pdf_doc)['cf'] === 'RFRRTI80A41D086K' && analizza_firma_pdf($pdf_doc)['nome'] === 'Rita Referente', "firma PAdES integra, firmatario e codice fiscale dal certificato");
 $EMAIL = [];
 prova(registra_firma_incarico($conn, $it, 'docente', $pdf_doc, 'caricato') === null && incarico_tutorato($conn, $it)['stato'] === 'firmata_docente' && array_column($EMAIL, 'a') === ['otto.ord@unical.it'], "firma del docente: la lettera va al direttore", json_encode(array_column($EMAIL, 'a')));

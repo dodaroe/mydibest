@@ -96,6 +96,10 @@ final class VerificaPdfFirmato
         if (strlen($dopo) <= strlen($prima) || strncmp($dopo, $prima, strlen($prima)) !== 0) {
             return ["Il PDF firmato non corrisponde alla lettera: deve essere la stessa lettera scaricata dal portale, con la firma aggiunta (senza modifiche o nuovi salvataggi).", []];
         }
+        // Dopo la lettera precedente deve esserci UNA sola revisione (la firma): un'altra revisione, con altro testo, aggiunta prima della firma non si vede ma cambia il documento
+        if (preg_match_all('/%%EOF/', substr($dopo, strlen($prima))) !== 1) {
+            return ["Il PDF firmato contiene altre modifiche oltre alla firma: deve essere la stessa lettera scaricata dal portale, con la sola firma aggiunta.", []];
+        }
         $f0 = $this->firme->firmePades($prima);
         $f1 = $this->firme->firmePades($dopo);
         if (count($f1) !== count($f0) + 1) {
