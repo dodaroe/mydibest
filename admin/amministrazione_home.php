@@ -3,7 +3,7 @@
 // le richieste di pubblicazione (richieste da guardare, in lavorazione, righe del file Excel da completare) con un pulsante che apre la pagina delle
 // richieste sulla vista giusta, e sotto «Tutte le sezioni» (con «Da compilare»: le colonne degli operatori in tabella, col numero di righe da completare).
 // Chi ha solo «Amministrazione · Richieste di pubblicazione» vede solo queste voci.
-// Voci per chi può tutto ($puo_amministrazione): Modulistica, Impostazioni e Campi e colonne.
+// Voci per chi può tutto ($puo_amministrazione): Modulistica, Impostazioni, Campi e colonne e SOS aule.
 // Scheda del pannello Amministrazione: si apre da amministrazione.php (o ?tab=home), mai direttamente. Non ha azioni proprie.
 if (!defined('AMMINISTRAZIONE_PANNELLO')) { http_response_code(403); exit('Accesso negato.'); }
 
@@ -19,6 +19,7 @@ if ($puo_amministrazione) {
     $sezioni_a[] = ['fa-file-lines', 'Modulistica', 'Documenti da scaricare e link per il personale, e le procedure online come la richiesta di pubblicazione.', 'amministrazione.php?tab=modulistica'];
     $sezioni_a[] = ['fa-sliders', 'Impostazioni', 'Richiesta di pubblicazione: chi può inviarla, aperta o chiusa, testi, limiti ed email.', 'amministrazione.php?tab=impostazioni'];
     $sezioni_a[] = ['fa-table-list', 'Campi e colonne', 'Richiesta di pubblicazione: nomi, aiuti e obbligatorietà dei campi del modulo e colonne del file Excel.', 'amministrazione.php?tab=campi'];
+    $sezioni_a[] = ['fa-life-ring', 'SOS aule', 'Richieste di aiuto dal QR in aula: aule e cartelli, referenti, studenti part-time, il form, le impostazioni e il registro.', 'sos_aule.php'];
 }
 
 if ($puo_pubblicazioni) {
