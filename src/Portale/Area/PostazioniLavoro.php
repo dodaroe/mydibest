@@ -16,8 +16,8 @@ final class PostazioniLavoro
     public const GIORNI_FERMA = 7;
 
     /** Permessi e numeri che il chiamante deve passare (le chiavi mancanti valgono falso e zero). */
-    public const PERMESSI = ['admin', 'didattica_tutto', 'didattica', 'conv_tesi', 'tutorato', 'fsl_convenzioni', 'assistenza', 'pubblicazioni', 'pubblicazioni_approva', 'aree'];
-    public const NUMERI = ['smistare', 'smistare_giorni', 'protocollare', 'verbali', 'conv_tesi', 'tutorato', 'conv_fsl', 'assistenza_prendere', 'assistenza_mie', 'pubblicazioni_da_guardare', 'pubblicazioni_giorni', 'pubblicazioni_da_completare', 'pubblicazioni_da_approvare'];
+    public const PERMESSI = ['admin', 'didattica_tutto', 'didattica', 'conv_tesi', 'tutorato', 'fsl_convenzioni', 'assistenza', 'sos', 'pubblicazioni', 'pubblicazioni_approva', 'aree'];
+    public const NUMERI = ['smistare', 'smistare_giorni', 'protocollare', 'verbali', 'conv_tesi', 'tutorato', 'conv_fsl', 'assistenza_prendere', 'assistenza_mie', 'sos_da_fare', 'pubblicazioni_da_guardare', 'pubblicazioni_giorni', 'pubblicazioni_da_completare', 'pubblicazioni_da_approvare'];
 
     /**
      * Le postazioni della persona, nell'ordine in cui compaiono.
@@ -89,6 +89,16 @@ final class PostazioniLavoro
                 'admin/assistenza.php', $pre + $n['assistenza_mie'], $pre > 0 ? 'da prendere o aperte' : 'aperte in carico a te', [
                     ['Da prendere', 'admin/assistenza.php?vista=da_prendere', false, $pre > 0, $pre],
                     ['Le mie', 'admin/assistenza.php?vista=mie', false, false, $n['assistenza_mie']],
+                ]);
+        }
+        if ($p['sos']) {
+            // «sos» = CodaInterventi::ammesso (referente di un'aula, responsabile di riserva o studente in servizio): la pagina sta fuori dal pannello
+            $fare = $n['sos_da_fare'];
+            $out[] = self::voce('sos', 'SOS aule', 'Le richieste di aiuto dalle aule: da prendere, da affidare, da chiudere.', 'fa-life-ring', '#b91c1c',
+                'sos_interventi.php', $fare, 'da fare', [
+                    ['Da fare', 'sos_interventi.php', false, $fare > 0, $fare],
+                    ['In corso', 'sos_interventi.php?scheda=in_corso'],
+                    ['Chiuse oggi', 'sos_interventi.php?scheda=chiuse'],
                 ]);
         }
         if ($p['pubblicazioni']) {

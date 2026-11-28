@@ -733,6 +733,58 @@ final class Definizioni
             telefono VARCHAR(60) NOT NULL DEFAULT '', creato_da VARCHAR(255) NOT NULL DEFAULT '', creato_il DATETIME DEFAULT CURRENT_TIMESTAMP, modificato_il DATETIME DEFAULT NULL,
             UNIQUE KEY uq_istituto_email (istituto_codice, email)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        // v147: SOS aule (src/SosAule). Le aule con il codice del QR: «codice» è casuale e non cambia mai da solo (è stampato sui cartelli); «codici_vecchi» (JSON) tiene quelli
+        // rigenerati, per riconoscere un cartello vecchio. risorsa_id è solo un collegamento facoltativo a una risorsa prenotabile: le due cose restano indipendenti.
+        'sos_aule' => "CREATE TABLE IF NOT EXISTS sos_aule (
+            id INT AUTO_INCREMENT PRIMARY KEY, nome VARCHAR(80) NOT NULL DEFAULT '', edificio VARCHAR(120) NOT NULL DEFAULT '', codice CHAR(8) NOT NULL,
+            codici_vecchi TEXT DEFAULT NULL, risorsa_id INT DEFAULT NULL, note VARCHAR(500) NOT NULL DEFAULT '', attiva TINYINT(1) NOT NULL DEFAULT 1,
+            ordine INT NOT NULL DEFAULT 0, creata_il DATETIME DEFAULT CURRENT_TIMESTAMP, creata_da INT DEFAULT NULL,
+            UNIQUE KEY uq_codice (codice), INDEX idx_attiva (attiva, ordine)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        // v147: chi riceve le segnalazioni: ambito «aula» (con aula_id) o «riserva» (aula_id NULL). persona_id è quello di personale_ateneo; l'email NON si copia.
+        // Con aula_id NULL l'UNIQUE non ferma i doppioni della riserva: li controlla PersoneSos.
+        'sos_referenti' => "CREATE TABLE IF NOT EXISTS sos_referenti (
+            id INT AUTO_INCREMENT PRIMARY KEY, ambito VARCHAR(10) NOT NULL DEFAULT 'aula', aula_id INT DEFAULT NULL, persona_id VARCHAR(80) NOT NULL,
+            nominativo VARCHAR(200) NOT NULL DEFAULT '', aggiunto_il DATETIME DEFAULT CURRENT_TIMESTAMP, aggiunto_da INT DEFAULT NULL,
+            UNIQUE KEY uq_ambito_aula_persona (ambito, aula_id, persona_id), INDEX idx_persona (persona_id), INDEX idx_aula (aula_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        // v147: gli studenti part-time, inseriti a mano: il permesso vale per l'account con l'email VERIFICATA uguale, attivo e dentro dal/al (NULL = senza limite)
+        'sos_studenti' => "CREATE TABLE IF NOT EXISTS sos_studenti (
+            id INT AUTO_INCREMENT PRIMARY KEY, nome VARCHAR(100) NOT NULL DEFAULT '', cognome VARCHAR(100) NOT NULL DEFAULT '', email VARCHAR(150) NOT NULL,
+            dal DATE DEFAULT NULL, al DATE DEFAULT NULL, attivo TINYINT(1) NOT NULL DEFAULT 1, note VARCHAR(500) NOT NULL DEFAULT '',
+            aggiunto_il DATETIME DEFAULT CURRENT_TIMESTAMP, aggiunto_da INT DEFAULT NULL,
+            UNIQUE KEY uq_email (email)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        // v147: i tipi di problema e gli esiti «non risolto», modificabili dal pannello (righe di partenza: App\SosAule\VociDiPartenza). chiede_testo = con questa voce
+        // («Altro») la descrizione, o la nota, è obbligatoria: così la regola resta anche se la voce viene rinominata. Una voce usata non si cancella, si spegne.
+        'sos_tipi' => "CREATE TABLE IF NOT EXISTS sos_tipi (
+            id INT AUTO_INCREMENT PRIMARY KEY, nome VARCHAR(120) NOT NULL, icona VARCHAR(50) NOT NULL DEFAULT 'fa-circle-question', aiuto VARCHAR(255) NOT NULL DEFAULT '',
+            ordine INT NOT NULL DEFAULT 0, attivo TINYINT(1) NOT NULL DEFAULT 1, chiede_testo TINYINT(1) NOT NULL DEFAULT 0
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        'sos_esiti' => "CREATE TABLE IF NOT EXISTS sos_esiti (
+            id INT AUTO_INCREMENT PRIMARY KEY, nome VARCHAR(120) NOT NULL, icona VARCHAR(50) NOT NULL DEFAULT 'fa-circle-question', aiuto VARCHAR(255) NOT NULL DEFAULT '',
+            ordine INT NOT NULL DEFAULT 0, attivo TINYINT(1) NOT NULL DEFAULT 1, chiede_testo TINYINT(1) NOT NULL DEFAULT 0
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        // v147: le segnalazioni (stati e passaggi: App\SosAule\Costanti). nome, cognome ed email di chi segnala si copiano all'invio; assegnata_a_studente = sos_studenti.id
+        'sos_segnalazioni' => "CREATE TABLE IF NOT EXISTS sos_segnalazioni (
+            id INT AUTO_INCREMENT PRIMARY KEY, codice VARCHAR(20) NOT NULL, aula_id INT NOT NULL, tipo_id INT NOT NULL, urgenza VARCHAR(10) NOT NULL DEFAULT 'aiuto',
+            descrizione VARCHAR(500) NOT NULL DEFAULT '', telefono VARCHAR(30) NOT NULL DEFAULT '', insegnamento_id INT DEFAULT NULL, campi_extra_json TEXT DEFAULT NULL,
+            foto VARCHAR(255) DEFAULT NULL, utente_id INT NOT NULL, nome VARCHAR(100) NOT NULL DEFAULT '', cognome VARCHAR(100) NOT NULL DEFAULT '', email VARCHAR(255) NOT NULL DEFAULT '',
+            stato VARCHAR(20) NOT NULL DEFAULT 'inviata', inviata_il DATETIME NOT NULL, presa_il DATETIME DEFAULT NULL, presa_da INT DEFAULT NULL,
+            assegnata_a_studente INT DEFAULT NULL, assegnata_il DATETIME DEFAULT NULL, chiusa_il DATETIME DEFAULT NULL, chiusa_da INT DEFAULT NULL,
+            esito_id INT DEFAULT NULL, esito_nota VARCHAR(500) NOT NULL DEFAULT '', inoltrata_a VARCHAR(500) NOT NULL DEFAULT '',
+            promemoria_il DATETIME DEFAULT NULL, riaperta_il DATETIME DEFAULT NULL,
+            UNIQUE KEY uq_codice (codice), INDEX idx_stato_aula (stato, aula_id), INDEX idx_utente (utente_id), INDEX idx_studente (assegnata_a_studente, stato), INDEX idx_inviata (inviata_il)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        // v147: la storia di ogni segnalazione. Una nota aggiunta (non è un passaggio) ha da_stato e a_stato vuoti. studente_id (sos_studenti.id) c'è quando
+        // agisce lo studente; minuti sono quelli dell'intervento chiuso con quella riga: con due interventi restano tutti e due
+        'sos_cronologia' => "CREATE TABLE IF NOT EXISTS sos_cronologia (
+            id INT AUTO_INCREMENT PRIMARY KEY, segnalazione_id INT NOT NULL, quando DATETIME NOT NULL, utente_id INT DEFAULT NULL, chi VARCHAR(250) NOT NULL DEFAULT '',
+            da_stato VARCHAR(20) NOT NULL DEFAULT '', a_stato VARCHAR(20) NOT NULL DEFAULT '', nota VARCHAR(1000) NOT NULL DEFAULT '',
+            studente_id INT DEFAULT NULL, minuti SMALLINT DEFAULT NULL,
+            INDEX idx_segnalazione (segnalazione_id, id),
+            CONSTRAINT fk_sos_cronologia FOREIGN KEY (segnalazione_id) REFERENCES sos_segnalazioni (id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
     ];
     }
 
@@ -1301,6 +1353,17 @@ final class Definizioni
                 "UPDATE impostazioni_sistema SET pubblicazioni_allegati_obbligatori = 0"],
             // v146: l'approvazione delle richieste, SPENTA di partenza (le richieste nascono già «approvate» come prima, finché l'amministratore non sceglie gli approvatori e la accende)
             'pubblicazioni_approvazione_attiva' => "ADD COLUMN pubblicazioni_approvazione_attiva TINYINT(1) NOT NULL DEFAULT 0",
+            // v147: SOS aule (App\SosAule\ImpostazioniSos), SPENTO di partenza. sos_orari vuoto = sempre; sos_campi vuoto = campi del form come nel codice (CampiSos);
+            // promemoria in minuti (0 = mai)
+            'sos_aperto' => "ADD COLUMN sos_aperto TINYINT(1) NOT NULL DEFAULT 0",
+            'sos_chi' => "ADD COLUMN sos_chi VARCHAR(255) NOT NULL DEFAULT '" . \App\Auth\Pubblico::DOCENTI . ',' . \App\Auth\Pubblico::PTA . ',' . \App\Auth\Pubblico::PERSONALE . "'",
+            'sos_telefono_riserva' => "ADD COLUMN sos_telefono_riserva VARCHAR(30) NOT NULL DEFAULT ''",
+            'sos_orari' => "ADD COLUMN sos_orari VARCHAR(600) NOT NULL DEFAULT ''",
+            'sos_promemoria_ferma' => "ADD COLUMN sos_promemoria_ferma SMALLINT NOT NULL DEFAULT 10",
+            'sos_promemoria_altre' => "ADD COLUMN sos_promemoria_altre SMALLINT NOT NULL DEFAULT 60",
+            'sos_campi' => "ADD COLUMN sos_campi TEXT DEFAULT NULL",
+            'sos_testo_introduttivo' => "ADD COLUMN sos_testo_introduttivo TEXT DEFAULT NULL",
+            'sos_conserva_foto_giorni' => "ADD COLUMN sos_conserva_foto_giorni SMALLINT NOT NULL DEFAULT 90",
             // v89: Didacticus acceso/spento, saluto, soglia di sicurezza (0-100: sotto non risponde) e immagine di profilo; didacticus_seminato = voci di partenza già inserite
             'didacticus_attivo'    => "ADD COLUMN didacticus_attivo TINYINT(1) NOT NULL DEFAULT 1",
             'didacticus_saluto'    => "ADD COLUMN didacticus_saluto TEXT DEFAULT NULL",

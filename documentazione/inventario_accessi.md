@@ -30,7 +30,7 @@ Li calcola `App\Auth\Permessi` (una volta per richiesta, per l'utente e l'area a
 | `puo_forms` | Amministratore o abilitato al modulo MyForms: può creare form nuovi | — |
 | `puo_forms_cogestore` | Co-gestore di almeno un form, senza l'abilitazione al modulo | — |
 | `puo_forms_vedere` | Entra in MyForms: abilitato al modulo, oppure co-gestore di almeno un form (vede solo i suoi) | `forms.php`, `forms_allegato.php`, `forms_risposte.php` |
-| `puo_amministrazione` | Tutto il modulo Amministrazione: amministratori e «Modulo Amministrazione» | — |
+| `puo_amministrazione` | Tutto il modulo Amministrazione: amministratori e «Modulo Amministrazione» | `sos_aule.php`, `sos_cartello.php` |
 | `puo_pubblicazioni` | Chi può tutto in Amministrazione e chi ha solo «Amministrazione · Richieste di pubblicazione» | `pubblicazioni.php` |
 | `puo_amm_entrare` | Una delle due abilitazioni dell'Amministrazione: entra nel modulo | `amministrazione.php` |
 | `puo_assistenza` | Amministratori e persone dell'ufficio fisso «Assistenza»: rispondono alle chat | `assistenza.php`, `didacticus.php`, `messaggi.php` |
@@ -94,6 +94,7 @@ Nessuna voce fissa: le sue pagine seguono le aree del modulo.
 | Da compilare | `pubblicazioni.php?vista=da_compilare` | richieste di pubblicazione | `pubblicazioni.php` |
 | Impostazioni | `amministrazione.php?tab=impostazioni` | Amministrazione | `amministrazione.php` |
 | Campi e colonne | `amministrazione.php?tab=campi` | Amministrazione | `amministrazione.php` |
+| SOS aule | `sos_aule.php` | Amministrazione | `sos_aule.php`, `sos_cartello.php` |
 
 ### Persone e permessi (`persone`)
 
@@ -207,6 +208,8 @@ L'indirizzo è quello del file (si apre anche senza «.php»); la colonna «Nucl
 | `simula.php` | `admin/simula.php` | pagina | amministratori | Sistema | Entra come… | — |
 | `sistema.php` | `admin/sistema.php` | pagina | amministratori | Sistema | Sistema e registri | — |
 | `sondaggi.php` | `admin/sondaggi.php` | pagina | chi gestisce attività dell'area | segue l'area aperta | — | — |
+| `sos_aule.php` | `admin/sos_aule.php` | pagina | Amministrazione | Amministrazione | SOS aule | `admin/sos_aule` |
+| `sos_cartello.php` | `admin/sos_cartello.php` | pagina | Amministrazione | Amministrazione | SOS aule | `admin/sos_cartello` |
 | `sostituzioni.php` | `admin/sostituzioni.php` | pagina | tutta la Didattica | Didattica | Sostituzioni | — |
 | `stampa_badge.php` | `admin/stampa_badge.php` | pagina | chi gestisce attività dell'area | segue l'area aperta | — | — |
 | `stampa_lista_iscritti.php` | `admin/stampa_lista_iscritti.php` | pagina | chi gestisce attività dell'area | segue l'area aperta | — | — |
@@ -228,7 +231,20 @@ Le pagine servite da `App\Http\Nucleo` (tabella `App\Portale\Instradamento\Rotte
 |---|---|---|---|---|
 | `contatti` | `contatti`, `contatti.php` | `App\Portale\Pagine\PaginaContatti` | `contatti.php` | pubblica (le regole proprie della pagina restano dentro la pagina) |
 | `approva_pubblicazioni` | `approva_pubblicazioni`, `approva_pubblicazioni.php` | `App\Portale\Pagine\PaginaApprovaPubblicazioni` | `approva_pubblicazioni.php` | pubblica (le regole proprie della pagina restano dentro la pagina) |
+| `sos` | `sos`, `sos.php` | `App\Portale\Pagine\PaginaSos` | `sos.php` | pubblica (le regole proprie della pagina restano dentro la pagina) |
+| `sos_interventi` | `sos_interventi`, `sos_interventi.php` | `App\Portale\Pagine\PaginaSosInterventi` | `sos_interventi.php` | pubblica (le regole proprie della pagina restano dentro la pagina) |
 | `admin/contatti` | `admin/contatti`, `admin/contatti.php` | `App\Portale\Pagine\PaginaContattiPannello` | `admin/contatti.php` | amministratori |
 | `admin/fsl` | `admin/fsl`, `admin/fsl.php` | `App\Portale\Pagine\PaginaNumeriFsl` | `admin/fsl.php` | convenzioni FSL |
 | `admin/fsl_scuole` | `admin/fsl_scuole`, `admin/fsl_scuole.php` | `App\Portale\Pagine\PaginaScuoleFsl` | `admin/fsl_scuole.php` | convenzioni FSL |
+| `admin/sos_aule` | `admin/sos_aule`, `admin/sos_aule.php` | `App\Portale\Pagine\PaginaSosPannello` | `admin/sos_aule.php` | Amministrazione |
+| `admin/sos_cartello` | `admin/sos_cartello`, `admin/sos_cartello.php` | `App\Portale\Pagine\PaginaSosCartello` | `admin/sos_cartello.php` | Amministrazione |
 | `stampa_ricevuta` | `stampa_ricevuta`, `stampa_ricevuta.php` | `App\Portale\Pagine\PaginaStampaRicevuta` | `stampa_ricevuta.php` | pubblica (le regole proprie della pagina restano dentro la pagina) |
+
+## 5. SOS aule: chi entra dove
+
+| Pagina | Chi entra |
+|---|---|
+| `sos.php` | Senza accesso: login, poi si torna all'aula del QR. Invia chi ha un profilo ammesso dalle impostazioni, con il modulo acceso. Una segnalazione la vede solo chi l'ha inviata e chi la gestisce (referente, studente a cui è affidata). |
+| `sos_interventi.php` | Referenti delle aule (solo le loro), responsabili di riserva (tutte), studenti part-time in servizio (solo quelle affidate a loro). |
+| `admin/sos_aule.php` (anche foto e scarichi del registro) | Tutto il modulo Amministrazione. |
+| `admin/sos_cartello.php` | Tutto il modulo Amministrazione. |

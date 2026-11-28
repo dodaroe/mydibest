@@ -251,7 +251,10 @@ prepara_cartelle() {
         MSG "Copio uploads/ dal sito vero (i collegamenti non si copiano)"
         # uploads/pubblicazioni (allegati delle richieste dei docenti) non si copia: resta solo il suo .htaccess che la blocca al web
         MSG "uploads/pubblicazioni non si copia (allegati dei docenti): resta vuota"
-        rsync -a --safe-links --filter='+ /pubblicazioni/.htaccess' --filter='- /pubblicazioni/*' "$VERO/uploads"/ "$PP/uploads"/ || AVVISO "rsync ha segnalato qualcosa su uploads/ (vedi sopra): controlla con «stato»."
+        # Stessa cosa per uploads/sos (le foto delle segnalazioni SOS aule)
+        MSG "uploads/sos non si copia (foto delle segnalazioni SOS aule): resta vuota"
+        rsync -a --safe-links --filter='+ /pubblicazioni/.htaccess' --filter='- /pubblicazioni/*' \
+            --filter='+ /sos/.htaccess' --filter='- /sos/*' "$VERO/uploads"/ "$PP/uploads"/ || AVVISO "rsync ha segnalato qualcosa su uploads/ (vedi sopra): controlla con «stato»."
         segna uploads "copiati"
     fi
 
@@ -574,6 +577,12 @@ costruisci_aggiornamenti() {
 
     # --- richieste di pubblicazione dei docenti (le email del docente nel registro degli invii: log_email, azzerato più sotto) ---
     tab pubblicazioni;             nominativo richiedente; fine
+
+    # --- SOS aule (le foto in uploads/sos non si copiano) ---
+    tab sos_segnalazioni;          persona email nome cognome; tel telefono; svuota descrizione esito_nota inoltrata_a campi_extra_json; fine
+    tab sos_cronologia;            nominativo chi; svuota nota; fine
+    tab sos_studenti;              persona email nome cognome; svuota note; fine
+    tab sos_referenti;             nominativo nominativo; fine
 
     # --- registri ---
     tab log_accessi;               persona email nome cognome; ip ip; fine

@@ -241,6 +241,17 @@ foreach (Rotte::elenco() as $rotta) {
     $o[] = '| `' . $rotta->percorso . '` | ' . implode(', ', array_map(fn ($i) => "`$i`", $rotta->indirizzi())) . ' | `' . $rotta->pagina . '` | `' . $rotta->file . '` | ' . cella($chi_rotta) . ' |';
 }
 $o[] = '';
+
+// ── 5. SOS aule: due pagine pubbliche con regole proprie, che la tabella qui sopra non può leggere ──
+$o[] = '## 5. SOS aule: chi entra dove';
+$o[] = '';
+$o[] = '| Pagina | Chi entra |';
+$o[] = '|---|---|';
+$o[] = '| `sos.php` | Senza accesso: login, poi si torna all\'aula del QR. Invia chi ha un profilo ammesso dalle impostazioni, con il modulo acceso. Una segnalazione la vede solo chi l\'ha inviata e chi la gestisce (referente, studente a cui è affidata). |';
+$o[] = '| `sos_interventi.php` | Referenti delle aule (solo le loro), responsabili di riserva (tutte), studenti part-time in servizio (solo quelle affidate a loro). |';
+$o[] = '| `admin/sos_aule.php` (anche foto e scarichi del registro) | Tutto il modulo Amministrazione. |';
+$o[] = '| `admin/sos_cartello.php` | Tutto il modulo Amministrazione. |';
+$o[] = '';
 $testo = implode("\n", $o);
 
 if (in_array('--stampa', $argv, true)) { echo $testo; exit(0); }

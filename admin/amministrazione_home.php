@@ -39,6 +39,18 @@ if ($puo_pubblicazioni) {
     $sezioni_a[] = ['fa-pen-to-square', 'Da compilare', ($n_dc === 0 ? 'Nessuna riga del file Excel ha celle vuote.' : ($n_dc === 1 ? '1 riga del file Excel ha celle vuote' : $n_dc . ' righe del file Excel hanno celle vuote') . ': compila le tue colonne, una richiesta alla volta.'), 'pubblicazioni.php?vista=da_compilare'];
 }
 
+// SOS aule: solo a chi può tutto e solo se qualcosa è fermo da più di un giorno
+if ($puo_amministrazione) {
+    try {
+        $n_sos = \App\Core\App::per($conn)->get(\App\Amministrazione\CoseDaFareAmministrazione::class)->sosFerme();
+        if ($n_sos > 0) {
+            $compiti_a[] = ['numero' => $n_sos, 'titolo' => 'SOS aule non risolte', 'testo' => 'Segnalazioni «non risolte» ferme da più di un giorno.', 'href' => 'sos_aule.php?scheda=registro&stato=non_risolta&dal=&al=', 'bottone' => 'Apri SOS aule', 'tono' => 'tuo', 'vuoto' => ''];
+        }
+    } catch (\Throwable $e) {
+        error_log('Amministrazione, SOS aule: ' . $e->getMessage());
+    }
+}
+
 echo pn_compiti($compiti_a, 'Cosa devo fare nell\'Amministrazione');
 ?>
 <h2 class="h6 fw-bold text-uppercase text-secondary mt-4 mb-2" style="letter-spacing:.05em;">Tutte le sezioni</h2>

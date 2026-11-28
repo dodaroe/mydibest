@@ -21,6 +21,8 @@ if (!function_exists('area_permessi_lavoro')) {
             'tutorato' => $admin || ha_modulo($conn, $uid, 'didattica') || utente_operatore_ufficio($conn, $user_info, 'bandi'),
             'fsl_convenzioni' => $fsl || ha_ambito($conn, $uid, 'fsl_convenzioni') || $app->get(\App\Uffici\ServizioUffici::class)->utenteMembro($user_info, 'convenzioni_fsl'),
             'assistenza' => $app->get(\App\Assistenza\OperatoriAssistenza::class)->eOperatore($user_info),
+            // SOS aule: referente di un'aula, responsabile di riserva o studente in servizio oggi (la stessa regola di sos_interventi.php)
+            'sos' => $app->get(\App\SosAule\CodaInterventi::class)->ammesso($user_info),
             // la stessa regola del pannello e di ServizioPubblicazioni::puoGestire (non una copia)
             'pubblicazioni' => $app->get(\App\Amministrazione\PermessiAmministrazione::class)->puoPubblicazioni($user_info),
             // chi approva le richieste di pubblicazione: account collegato a una persona della lista «Chi approva» (per persona_id, mai per email); non è un permesso del pannello

@@ -72,7 +72,7 @@ final class SaluteSito
         }
         $esiti = [];
         foreach ($this->righe() as $r) {
-            if (!in_array($r['chiave'], ['cron_background', 'cron_reminders', 'cron_backup', 'certificato'], true)) {
+            if (!in_array($r['chiave'], ['cron_background', 'cron_sos', 'cron_reminders', 'cron_backup', 'certificato'], true)) {
                 continue;
             }
             if ($r['semaforo'] === self::ROSSO || $r['semaforo'] === self::VERDE) {
@@ -141,6 +141,7 @@ final class SaluteSito
                 'cron_background' => $this->cron->ultima('cron_background'),
                 'cron_attestati' => $this->cron->ultima('cron_attestati'),
                 'cron_reminders' => $this->cron->ultima('cron_reminders'),
+                'cron_sos' => $this->cron->ultima('cron_sos'),
                 'cron_backup' => $quando($bk['data'] ?? null),
             ],
             'spazio' => ['portale' => $libero($radice), 'uploads' => $libero($radice . '/uploads')],
@@ -218,6 +219,7 @@ final class SaluteSito
         } else {
             $riga('cron_attestati', 'Attestati automatici (cron_attestati)', self::esitoAttestati($cron['cron_attestati'] ?? null, $adesso));
         }
+        $riga('cron_sos', 'SOS aule: promemoria e foto (cron_sos, dentro cron_background)', $spento ? [self::GRIGIO, $spento] : self::esitoCron($cron['cron_sos'] ?? null, $adesso, self::SOGLIA_CRON_QUARTO_D_ORA));
         $riga('cron_reminders', 'Promemoria (cron_reminders)', $spento ? [self::GRIGIO, $spento] : self::esitoCron($cron['cron_reminders'] ?? null, $adesso, self::SOGLIA_CRON_QUARTO_D_ORA));
         $riga('cron_backup', 'Esecuzione del backup (cron_backup)', $spento ? [self::GRIGIO, $spento] : self::esitoCron($cron['cron_backup'] ?? null, $adesso, self::SOGLIA_CRON_GIORNALIERO));
 

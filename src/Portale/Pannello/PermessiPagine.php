@@ -89,6 +89,8 @@ final class PermessiPagine
         'forms_risposte.php'        => ['puo_forms_vedere'],
         'amministrazione.php'       => ['puo_amm_entrare'],
         'pubblicazioni.php'         => ['puo_pubblicazioni'],
+        'sos_aule.php'              => ['puo_amministrazione'],
+        'sos_cartello.php'          => ['puo_amministrazione'],
         'report_ambiti.php'         => ['puo_orientamento'],
         'messaggi.php'              => ['ha_caselle', 'puo_fsl_convenzioni', 'puo_assistenza'],
 

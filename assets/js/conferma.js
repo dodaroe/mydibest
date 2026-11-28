@@ -5,6 +5,7 @@
 //                                                            (di solito il nome dell'elemento; maiuscole e spazi in più non contano);
 //                                                            il testo della domanda resta in data-conferma
 //   data-conferma-livello="pericolo"                         colore rosso anche senza «elimina» nel testo
+//   data-conferma-pulsante="Testo"                          il testo del pulsante del «sì», quando non si elimina niente (es. «Sì, rigenera»)
 // Il vecchio nome data-confirm (e data-confirm-level) funziona ancora, così le pagine non ancora aggiornate non cambiano.
 // Da altri script: window.pnConferma(testo, function () { ... }, { scrivi: 'parola', pericolo: true }).
 // Un modulo inviato dopo la conferma porta anche name e value del pulsante premuto (si rifà il click, che il browser tratta come sempre).
@@ -93,13 +94,14 @@
         azione = fa; confermato = false;
         m.querySelector('#pnConfermaTesto').textContent = testo;
         var testa = m.querySelector('#pnConfermaTesta'), si = m.querySelector('#pnConfermaSi'), btnX = m.querySelector('.btn-close');
-        m.querySelector('#pnConfermaTitolo').innerHTML = pericolo ? '<i class="fa fa-trash me-1" aria-hidden="true"></i> Sei sicuro?' : '<i class="fa fa-exclamation-triangle me-1" aria-hidden="true"></i> Conferma';
+        m.querySelector('#pnConfermaTitolo').innerHTML = pericolo && !opz.pulsante ? '<i class="fa fa-trash me-1" aria-hidden="true"></i> Sei sicuro?' : '<i class="fa fa-exclamation-triangle me-1" aria-hidden="true"></i> ' + (pericolo ? 'Sei sicuro?' : 'Conferma');
         // colori in assets/css/portale-ui.css (variabili di dibest-colori.css: giusti anche nel tema scuro, del sito e del pannello)
         testa.className = 'modal-header py-2 pn-conf-testa ' + (pericolo ? 'pn-conf-pericolo' : 'pn-conf-attenzione');
         btnX.classList.remove('btn-close-white');
         si.className = 'btn btn-sm fw-bold px-4 ' + (pericolo ? 'btn-danger' : 'btn-warning text-dark');
         si.innerHTML = scrivi !== '' ? '<i class="fa fa-trash me-1" aria-hidden="true"></i>Elimina definitivamente'
             : (pericolo ? '<i class="fa fa-trash me-1" aria-hidden="true"></i>Sì, elimina' : '<i class="fa fa-check me-1" aria-hidden="true"></i>Sì, procedi');
+        if (opz.pulsante) si.textContent = opz.pulsante;
         si.disabled = scrivi !== '';
         var blocco = m.querySelector('#pnConfermaScrivi'), campo = m.querySelector('#pnConfermaCampo');
         blocco.hidden = scrivi === '';
@@ -113,7 +115,7 @@
         var testo = x.getAttribute('data-conferma');
         if (testo === null) testo = x.getAttribute('data-confirm');
         var liv = x.getAttribute('data-conferma-livello') || x.getAttribute('data-confirm-level') || '';
-        return { testo: testo || '', opz: { scrivi: x.getAttribute('data-conferma-scrivi'), pericolo: liv === 'pericolo' || liv === 'danger' } };
+        return { testo: testo || '', opz: { scrivi: x.getAttribute('data-conferma-scrivi'), pericolo: liv === 'pericolo' || liv === 'danger', pulsante: x.getAttribute('data-conferma-pulsante') } };
     }
 
     // Link e pulsanti: si ferma il click, si chiede, e dopo il «sì» si rifà lo stesso click (un modulo parte col suo pulsante, name e value compresi)

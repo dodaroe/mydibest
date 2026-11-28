@@ -40,7 +40,7 @@ final class SaluteSitoTest extends TestCase
 
         return [
             'modo' => $modo,
-            'cron' => ['cron_background' => $a - 600, 'cron_attestati' => null, 'cron_reminders' => $a - 600, 'cron_backup' => $a - 8 * 3600],
+            'cron' => ['cron_background' => $a - 600, 'cron_sos' => $a - 600, 'cron_attestati' => null, 'cron_reminders' => $a - 600, 'cron_backup' => $a - 8 * 3600],
             'spazio' => ['portale' => 40.0, 'uploads' => 40.0],
             'backup' => ['ultimo_ok' => $a - 8 * 3600, 'ultimo_giro_ok' => true],
             'certificato' => ['scade' => $a + 80 * 86400],
@@ -58,7 +58,7 @@ final class SaluteSitoTest extends TestCase
     {
         $s = $this->semafori($this->dati());
         $this->assertSame(
-            ['cron_background', 'cron_attestati', 'cron_reminders', 'cron_backup', 'spazio_portale', 'spazio_uploads', 'backup', 'certificato', 'email'],
+            ['cron_background', 'cron_attestati', 'cron_sos', 'cron_reminders', 'cron_backup', 'spazio_portale', 'spazio_uploads', 'backup', 'certificato', 'email'],
             array_keys($s)
         );
         foreach ($s as $chiave => $sem) {

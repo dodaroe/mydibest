@@ -7,7 +7,7 @@ namespace App\Sistema;
 use App\Core\Sito;
 
 /**
- * Quando è girato l'ultima volta ciascun processo automatico (cron_background, cron_attestati, cron_reminders):
+ * Quando è girato l'ultima volta ciascun processo automatico (cron_background, cron_attestati, cron_reminders, e cron_sos che gira dentro cron_background):
  * lo scrive il processo stesso, a lavoro finito, in cache/cron_ultima_esecuzione.json; lo legge il controllo di salute in Sistema.
  * Per il backup basta cache/backup_stato.json. Per i processi già in funzione prima di questa classe, in mancanza
  * dell'annotazione si legge la data dell'ultima modifica del loro file di blocco (cache/<nome>.lock, riscritto a ogni avvio).

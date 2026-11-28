@@ -92,6 +92,11 @@ try {
         if ($pb['da_completare'] > 0) $cose[] = ['amministrazione', $pb['da_completare'], $pb['da_completare'] === 1 ? 'Riga del file Excel da completare' : 'Righe del file Excel da completare',
             'Amministrazione · richieste di pubblicazione con colonne ancora vuote', 'pubblicazioni.php?vista=monitoraggio', false];
     });
+    // SOS aule · «non risolte» ferme da più di un giorno (solo chi può tutto nell'Amministrazione)
+    if ($puo_amministrazione) $sicuro('sos aule', function () use (&$cose, $conn) {
+        $n_sos = \App\Core\App::per($conn)->get(\App\Amministrazione\CoseDaFareAmministrazione::class)->sosFerme();
+        if ($n_sos > 0) $cose[] = ['amministrazione', $n_sos, $n_sos === 1 ? 'Segnalazione SOS non risolta' : 'Segnalazioni SOS non risolte', 'Amministrazione · SOS aule: ferme da più di un giorno', 'sos_aule.php?scheda=registro&stato=non_risolta&dal=&al=', true];
+    });
     if ($puo_fsl_convenzioni) $sicuro('convenzioni caricate', function () use (&$cose, $cdf) {
         $n_cf = $cdf->convenzioniDaPrendereInCarico();
         if ($n_cf > 0) $cose[] = ['fsl', $n_cf, $n_cf === 1 ? 'Convenzione della scuola da seguire' : 'Convenzioni delle scuole da seguire', 'Formazione Scuola Lavoro · caricate dalle scuole: da prendere in carico, far firmare al Direttore e protocollare', 'fsl_scuole.php', true];

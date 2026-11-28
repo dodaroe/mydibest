@@ -387,6 +387,12 @@ final class VistaTest extends TestCase
         $anteprima = ['errore' => null, 'azione' => 'creare', 'cosa' => "l'Allegato A", 'email' => $cattivo, 'scuola' => $cattivo, 'referente_attuale' => $cattivo, 'compilazione_id' => 5, 'link_nuovo' => true, 'copia' => ['disponibile' => true, 'permessa' => false, 'dirigente' => $cattivo]];
 
         return [
+            'pannello/sos_aule' => self::datiSosAule($cattivo),
+            'pannello/sos_cartello' => [
+                ['cartelli' => [['nome' => $cattivo, 'edificio' => $cattivo, 'qr' => '<svg></svg>', 'indirizzo' => $cattivo], ['nome' => '5C2', 'edificio' => '', 'qr' => '<svg></svg>', 'indirizzo' => 'example.org/sos.php?aula=ABCD2345']],
+                    'telefono' => $cattivo, 'indietro' => 'sos_aule.php?p_id=1&scheda=aule'],
+                ['cartelli' => [], 'telefono' => '', 'indietro' => 'sos_aule.php?p_id=1&scheda=aule'],
+            ],
             'pannello/autenticazione_richiesta' => [['css_bootstrap' => 'a.css', 'css_icone' => 'b.css', 'link_accedi' => '../saml_login.php?redirect=admin%2Findex.php'],
                 ['css_bootstrap' => 'a.css?x=1&y=2', 'css_icone' => 'b.css', 'link_accedi' => '../saml_login.php?redirect=' . urlencode($cattivo)]],
             'pubblico/contatti' => [['contatti' => []], ['contatti' => [$pubblico, ['link_url' => '', 'esterno' => false] + $pubblico]]],
@@ -410,6 +416,8 @@ final class VistaTest extends TestCase
                     $base + ['quale' => 'mancante'],
                 ];
             })(),
+            'pubblico/sos' => self::datiSos($cattivo),
+            'pubblico/sos_interventi' => self::datiSosInterventi($cattivo),
             'pannello/contatti' => [
                 $pannello(-1, []),
                 $pannello(0, []),
@@ -456,6 +464,142 @@ final class VistaTest extends TestCase
                 ['p' => ['stato' => 'confermata', 'logo_path' => '', 'nome_turno' => '', 'data_turno' => ''] + $ricevuta, 'qr' => '', 'css_bootstrap' => 'a.css', 'css_icone' => 'b.css',
                     'col_ric' => '#000000', 'col_ric_txt' => '#FFFFFF', 'col_ric_testo' => '#000000', 'senza_prenotazione' => false, 'custom' => []],
             ],
+        ];
+    }
+
+    /**
+     * SOS aule: il modello principale riceve la scheda aperta già resa («corpo»), quindi qui ogni scheda si rende con il suo parziale _sos_*
+     * (che a sua volta rende i parziali più piccoli): prima piena, poi con gli elenchi vuoti e gli avvisi che compaiono solo allora.
+     * Va chiamata con la radice vera delle viste.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private static function datiSosAule(string $cattivo): array
+    {
+        $csrf = '<input type="hidden" name="csrf_token" value="tok">';
+        $comuni = ['campoCsrf' => $csrf, 'filtro' => 1];
+
+        $aula = ['id' => 3, 'nome' => $cattivo, 'edificio' => $cattivo, 'note' => $cattivo, 'codice' => 'ABCD2345', 'attiva' => true, 'referenti' => '1 referente', 'aperte' => 2,
+            'cancellabile' => true, 'prima' => true, 'ultima' => false, 'qr' => '<svg></svg>', 'urlCartello' => 'sos_cartello.php?p_id=1&aula=3', 'urlProva' => '../sos.php?aula=ABCD2345'];
+        $aule = $comuni + ['aule' => [$aula, ['id' => 4, 'edificio' => '', 'note' => '', 'attiva' => false, 'cancellabile' => false, 'prima' => false, 'ultima' => true] + $aula], 'attive' => 1, 'urlTutti' => 'sos_cartello.php?p_id=1&tutte=1'];
+
+        $persona = ['persona_id' => $cattivo, 'nominativo' => $cattivo, 'email' => $cattivo, 'avvisi' => [$cattivo]];
+        $modulo = ['azione' => 'studente_salva', 'id' => 9, 'nome' => $cattivo, 'cognome' => $cattivo, 'email' => $cattivo, 'dal' => '2026-10-01', 'al' => '2027-09-30', 'note' => $cattivo, 'attivo' => 1,
+            'errore' => $cattivo, 'conferma' => true, 'aperto' => true];
+        $nuovo = ['azione' => 'studente_aggiungi', 'id' => 0, 'nome' => '', 'cognome' => '', 'email' => '', 'dal' => '', 'al' => '', 'note' => '', 'attivo' => 1, 'errore' => '', 'conferma' => false, 'aperto' => false];
+        $persone = $comuni + ['scoperte' => [$cattivo], 'conAnagrafe' => true,
+            'aule' => [['id' => 3, 'nome' => $cattivo, 'edificio' => $cattivo, 'attiva' => false, 'persone' => [$persona, ['email' => '', 'avvisi' => []] + $persona], 'quanti' => 2, 'ricerca' => '<div class="ricerca"></div>'],
+                ['id' => 4, 'nome' => '5C3', 'edificio' => '', 'attiva' => true, 'persone' => [], 'quanti' => 0, 'ricerca' => '']],
+            'riserva' => [$persona], 'quantiRiserva' => 1, 'ricercaRiserva' => '<div class="ricerca"></div>',
+            'studenti' => [['id' => 9, 'nominativo' => $cattivo, 'email' => $cattivo, 'note' => $cattivo, 'periodo' => 'dal 01/10/2026', 'attivo' => false, 'avvisi' => [$cattivo], 'modulo' => $modulo]],
+            'nuovo' => $nuovo];
+
+        $icone = [['valore' => 'fa-video', 'nome' => $cattivo, 'scelta' => true], ['valore' => 'fa-key', 'nome' => 'Chiave', 'scelta' => false]];
+        $voce = ['id' => 2, 'nome' => $cattivo, 'aiuto' => $cattivo, 'icona' => 'fa-video', 'icone' => $icone, 'chiedeTesto' => true, 'attivo' => false, 'prima' => true, 'ultima' => true];
+        $elenco = ['quale' => 'sos_tipi', 'titolo' => 'Tipi di problema', 'spiegazione' => $cattivo, 'nuova' => ['nome' => '', 'aiuto' => '', 'chiedeTesto' => false, 'icone' => $icone], 'voci' => [$voce]];
+        $riga = ['chiave' => 'x_1', 'etichetta' => $cattivo, 'opzioni' => $cattivo, 'aiuto' => $cattivo, 'obbligatorio' => true, 'visibile' => false, 'tipi' => [['valore' => 'text', 'nome' => 'Testo breve', 'scelto' => true]]];
+        $campoAnteprima = static fn (string $forma, array $scelte = []): array => ['etichetta' => $cattivo, 'aiuto' => $cattivo, 'obbligatorio' => true, 'forma' => $forma, 'scelte' => $scelte];
+        $modulo = $comuni + [
+            'fissi' => [['chiave' => 'telefono', 'etichetta' => $cattivo, 'aiuto' => $cattivo, 'obbligatorio' => true, 'visibile' => true, 'fisso_obb' => false, 'fisso_vis' => true, 'originale' => 'Cellulare', 'cambiato' => true]],
+            'righe' => [$riga], 'vuota' => ['chiave' => '', 'etichetta' => '', 'opzioni' => '', 'aiuto' => '', 'obbligatorio' => false, 'visibile' => true] + $riga, 'massimo' => 15, 'erroreAggiunti' => $cattivo,
+            'elenchi' => [$elenco],
+            'anteprima' => ['intro' => $cattivo, 'aule' => [$cattivo], 'tipiProblema' => [['nome' => $cattivo, 'icona' => 'fa-video', 'aiuto' => $cattivo]], 'urgenze' => [$cattivo],
+                'campi' => array_merge(array_map($campoAnteprima, ['aula', 'tipo', 'urgenza', 'casella', 'lungo', 'file', 'data', 'testo']), [$campoAnteprima('radio', [$cattivo]), $campoAnteprima('caselle', [$cattivo])])],
+        ];
+
+        $impostazioni = $comuni + ['aperto' => true, 'attivoDavvero' => false, 'motivo' => $cattivo, 'chi' => '<select></select>', 'telefono' => $cattivo, 'orari' => $cattivo,
+            'ferma' => '10', 'altre' => '60', 'intro' => $cattivo, 'giorni' => '90', 'errori' => [$cattivo]];
+
+        $opzione = [['valore' => '3', 'testo' => $cattivo, 'scelta' => true]];
+        $registro = $comuni + ['dal' => '2026-10-01', 'al' => '2026-11-28', 'testo' => $cattivo, 'periodo' => $cattivo, 'aule' => $opzione, 'tipi' => $opzione, 'stati' => $opzione, 'urgenze' => $opzione,
+            'studenti' => $opzione, 'urlAzzera' => 'sos_aule.php?p_id=1&scheda=registro', 'quante' => 201, 'altre' => 1, 'soglia' => 3, 'numeriHtml' => '<ol></ol>',
+            'scaricaElencoHtml' => '<div></div>', 'scaricaNumeriHtml' => '<div></div>', 'perAula' => [['nome' => $cattivo, 'quante' => 3]], 'perTipo' => [['nome' => $cattivo, 'quante' => 3]],
+            'malate' => [['aula' => $cattivo, 'tipo' => $cattivo, 'quante' => 3]], 'minuti' => [['studente' => $cattivo, 'mese' => 'novembre 2026', 'minuti' => 20, 'interventi' => 2]],
+            'righe' => [['id' => 5, 'codice' => $cattivo, 'quando' => '28/11/2026 10:12', 'aula' => $cattivo, 'edificio' => $cattivo, 'tipo' => $cattivo, 'icona' => 'fa-video', 'urgenza' => $cattivo,
+                'stato' => $cattivo, 'colore' => 'ok', 'docente' => $cattivo, 'email' => $cattivo, 'telefono' => $cattivo, 'descrizione' => $cattivo, 'aggiunti' => [['etichetta' => $cattivo, 'valore' => $cattivo]],
+                'studente' => $cattivo, 'esito' => $cattivo, 'inoltrata' => $cattivo, 'foto' => 'sos_aule.php?p_id=1&scheda=registro&foto=5', 'cronologia' => [['ora' => '28/11 10:12', 'testo' => $cattivo]]]]];
+
+        $varianti = [
+            ['_sos_aule', $aule],
+            ['_sos_aule', $comuni + ['aule' => [], 'attive' => 0, 'urlTutti' => '']],
+            ['_sos_persone', $persone],
+            ['_sos_persone', ['scoperte' => [], 'conAnagrafe' => false, 'aule' => [], 'riserva' => [], 'quantiRiserva' => 0, 'ricercaRiserva' => '', 'studenti' => []] + $persone],
+            ['_sos_modulo', $modulo],
+            ['_sos_impostazioni', $impostazioni],
+            ['_sos_impostazioni', ['attivoDavvero' => true, 'motivo' => '', 'errori' => []] + $impostazioni],
+            ['_sos_registro', $registro],
+            ['_sos_registro', ['altre' => 0, 'quante' => 0, 'righe' => [], 'perAula' => [], 'perTipo' => [], 'malate' => [], 'minuti' => []] + $registro],
+        ];
+
+        return array_map(static fn (array $v): array => [
+            'schede' => [['titolo' => $cattivo, 'icona' => 'fa-door-open', 'attiva' => true, 'url' => 'sos_aule.php?p_id=1&scheda=aule'], ['titolo' => 'Persone', 'icona' => 'fa-user-group', 'attiva' => false, 'url' => 'sos_aule.php?p_id=1&scheda=persone']],
+            'corpo' => Vista::rendi('pannello/' . $v[0], $v[1]),
+        ], $varianti);
+    }
+
+    /** sos.php: il form (con tutti gli avvisi e i campi possibili), il messaggio e la pagina di una segnalazione. @return list<array<string, mixed>> */
+    private static function datiSos(string $cattivo): array
+    {
+        $csrf = '<input type="hidden" name="csrf_token" value="tok">';
+        $mie = [['href' => 'sos.php?segnalazione=1', 'titolo' => $cattivo, 'sotto' => $cattivo, 'stato' => 'In attesa', 'colore' => 'attesa']];
+        $base = ['avvisoHtml' => '', 'temaHtml' => '<script nonce="x"></script>', 'mie' => $mie];
+        $riserva = ['telefonoRiserva' => $cattivo, 'telefonoRiservaHref' => 'tel:0984'];
+        $campo = ['etichetta' => $cattivo, 'aiuto' => $cattivo, 'facoltativo' => true, 'visibile' => true];
+        $aggiunto = static fn (string $tipo): array => ['chiave' => 'x_1', 'etichetta' => $cattivo, 'tipo' => $tipo, 'aiuto' => $cattivo, 'facoltativo' => true, 'valore' => $cattivo, 'errore' => $cattivo,
+            'opzioni' => [['testo' => $cattivo, 'scelta' => true]]];
+        $form = $base + $riserva + [
+            'quale' => 'form', 'azione' => 'sos.php?aula=ABCD2345', 'campoCsrf' => $csrf, 'sottotitolo' => $cattivo, 'messaggio' => $cattivo, 'cartelloVecchio' => true, 'fuoriOrario' => true,
+            'aulaScelta' => true, 'aulaId' => 3, 'aulaPrima' => 'Sei nell\'aula', 'aulaStacco' => true, 'aulaNome' => $cattivo, 'aulaEdificio' => $cattivo,
+            'aule' => [['id' => 3, 'nome' => $cattivo, 'breve' => $cattivo, 'scelta' => true]],
+            'avvisoDoppione' => true, 'avvisato' => 3, 'doppione' => ['id' => 5, 'ora' => '10:12', 'tipo' => $cattivo, 'stato' => $cattivo, 'href' => 'sos.php?segnalazione=5'], 'maxNota' => 500,
+            'docenteNome' => $cattivo, 'docenteEmail' => $cattivo,
+            'c' => array_fill_keys(['docente', 'telefono', 'aula', 'tipo', 'urgenza', 'descrizione', 'foto', 'insegnamento'], $campo),
+            'errori' => array_fill_keys(['aula_id', 'tipo_id', 'urgenza', 'descrizione', 'foto', 'telefono', 'insegnamento_id'], $cattivo),
+            'tipi' => [['id' => 1, 'nome' => $cattivo, 'icona' => 'fa-video', 'aiuto' => $cattivo, 'scelto' => true]],
+            'urgenze' => [['id' => 'ferma', 'testo' => $cattivo, 'icona' => 'fa-hand', 'ferma' => true, 'scelta' => true]],
+            'descrizione' => $cattivo, 'maxDescrizione' => 500, 'fotoDaRiscegliere' => true, 'telefono' => $cattivo, 'maxTelefono' => 30,
+            'insegnamentoTesto' => $cattivo, 'insegnamentoMeta' => $cattivo, 'insegnamenti' => [['id' => 7, 'nome' => $cattivo, 'scelto' => true]],
+            'scriptInsegnamenti' => 'assets/js/campi-pratica.js?v=1', 'base' => '/mydibest',
+            'aggiunti' => array_map($aggiunto, ['text', 'textarea', 'radio', 'multicheck', 'date', 'checkbox']),
+        ];
+        $stato = Vista::rendi('pubblico/_sos_stato', ['stato' => 'in_corso', 'tono' => 'ok', 'icona' => 'fa-circle-check', 'titolo' => $cattivo, 'riga' => $cattivo, 'passiHtml' => '<ol></ol>',
+            'cronologia' => [['ora' => '10:12', 'testo' => $cattivo]], 'foto' => 'sos.php?segnalazione=5&foto=1', 'aperta' => true]);
+        $segnalazione = $base + ['quale' => 'segnalazione', 'statoHtml' => $stato, 'aperta' => true, 'urlFrammento' => 'sos.php?segnalazione=5&frammento=1', 'azione' => 'sos.php?segnalazione=5',
+            'campoCsrf' => $csrf, 'puoScrivere' => true, 'maxNota' => 500, 'riapribile' => false, 'riapriEntro' => ''];
+
+        return [
+            $form,
+            ['messaggio' => '', 'cartelloVecchio' => false, 'fuoriOrario' => false, 'aulaScelta' => false, 'avvisoDoppione' => false, 'aggiunti' => [], 'mie' => []] + $form,
+            $base + $riserva + ['quale' => 'messaggio', 'testo' => $cattivo, 'tono' => 'attesa'],
+            $segnalazione,
+            ['aperta' => false, 'puoScrivere' => false, 'riapribile' => true, 'riapriEntro' => 'domani alle 10:31'] + $segnalazione,
+        ];
+    }
+
+    /** sos_interventi.php: l'elenco con una card piena (tutti i pulsanti) e una vuota, l'elenco senza card e il messaggio. @return list<array<string, mixed>> */
+    private static function datiSosInterventi(string $cattivo): array
+    {
+        $base = ['avvisoHtml' => '', 'temaHtml' => '<script nonce="x"></script>'];
+        $card = [
+            'id' => 5, 'aperta' => true, 'classe' => 'ferma', 'ferma' => true, 'urgenza' => 'Lezione ferma', 'aula' => $cattivo, 'edificio' => $cattivo, 'daQuanto' => 'da 7 minuti',
+            'stato' => $cattivo, 'colore' => 'azione', 'icona' => 'fa-video', 'tipo' => $cattivo, 'descrizione' => $cattivo, 'aggiunti' => [['etichetta' => $cattivo, 'valore' => $cattivo]], 'foto' => 'sos.php?segnalazione=5&foto=1', 'docente' => $cattivo,
+            'telefono' => $cattivo, 'telefonoHref' => 'tel:333', 'codice' => $cattivo, 'ora' => '10:12', 'nonRisoltaTitolo' => $cattivo, 'nonRisoltaTesto' => $cattivo, 'inMano' => $cattivo,
+            'cronologia' => [['ora' => '10:12', 'testo' => $cattivo]], 'url' => 'sos_interventi.php?id=5', 'campoCsrf' => '<input type="hidden" name="csrf_token" value="tok">',
+            'prendi' => 'La riprendo io', 'prendiAzione' => 'riprendi', 'confermaPrendi' => $cattivo, 'affida' => 'La passo a un altro studente', 'confermaAffida' => $cattivo,
+            'studenti' => [['id' => 2, 'nome' => $cattivo]], 'nessunoStudente' => $cattivo, 'risolta' => true, 'inoltra' => true, 'chiudi' => true,
+            'staAndando' => true, 'risoltoStudente' => true, 'nonRisolto' => true, 'esiti' => [['id' => 1, 'nome' => $cattivo, 'icona' => 'fa-lock']], 'maxNota' => 500, 'maxMinuti' => 1440,
+        ];
+        $spoglia = ['id' => 6, 'aggiunti' => [], 'aperta' => false, 'classe' => 'aiuto', 'ferma' => false, 'daQuanto' => '', 'descrizione' => '', 'foto' => '', 'telefono' => '', 'nonRisoltaTitolo' => '',
+            'prendi' => '', 'affida' => '', 'studenti' => [], 'risolta' => false, 'inoltra' => false, 'chiudi' => false, 'staAndando' => false, 'risoltoStudente' => false, 'nonRisolto' => false] + $card;
+        $elenco = static fn (array $righe): string => Vista::rendi('pubblico/_sos_interventi_elenco', ['scheda' => 'da_fare', 'card' => $righe, 'vuoto' => 'Niente da fare.',
+            'linguette' => [['testo' => 'Da fare', 'numero' => 2, 'attiva' => true, 'url' => 'sos_interventi.php'], ['testo' => 'In corso', 'numero' => 0, 'attiva' => false, 'url' => 'sos_interventi.php?scheda=in_corso']]]);
+        $pagina = $base + ['quale' => 'elenco', 'sottotitolo' => 'Le segnalazioni delle tue aule.', 'spento' => true, 'elencoHtml' => $elenco([$card, ['affida' => 'Mando uno studente'] + $spoglia, $spoglia]),
+            'urlFrammento' => 'sos_interventi.php?id=5&frammento=1', 'ancora' => 'sos-5', 'push' => true, 'csrfToken' => 'tok', 'scriptPush' => 'assets/js/assistenza-push.js?v=1'];
+
+        return [
+            $pagina,
+            ['spento' => false, 'push' => false, 'ancora' => '', 'elencoHtml' => $elenco([])] + $pagina,
+            $base + ['quale' => 'messaggio', 'testo' => $cattivo, 'tono' => 'azione', 'indietro' => 'sos_interventi.php'],
         ];
     }
 

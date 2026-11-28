@@ -29,7 +29,10 @@ if ($lav_perm['assistenza']) $lav_conta('assistenza', function () use (&$lav_num
     $c = $lav_app->get(\App\Assistenza\ServizioAssistenza::class)->contatori($lav_uid);
     $lav_num['assistenza_prendere'] = (int)$c['da_prendere']; $lav_num['assistenza_mie'] = (int)$c['mie'];
 });
-if ($lav_perm['pubblicazioni']) $lav_conta('richieste di pubblicazione', function () use (&$lav_num, $lav_app, $user_info) {
+if ($lav_perm['sos']) $lav_conta('sos aule', function () use (&$lav_num, $lav_app, $user_info) {
+    $lav_num['sos_da_fare'] = count($lav_app->get(\App\SosAule\CodaInterventi::class)->schede($user_info)['da_fare']);
+});
+if ($lav_perm['pubblicazioni']) $lav_conta('richieste di pubblicazione',function () use (&$lav_num, $lav_app, $user_info) {
     $pb = $lav_app->get(\App\Amministrazione\CoseDaFareAmministrazione::class)->pubblicazioni($user_info);
     $lav_num['pubblicazioni_da_guardare'] = $pb['ricevute']; $lav_num['pubblicazioni_giorni'] = $pb['giorni']; $lav_num['pubblicazioni_da_completare'] = $pb['da_completare'];
 });

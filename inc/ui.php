@@ -74,7 +74,7 @@ if (!function_exists('ui_vuoto')) {
 if (!function_exists('ui_passi')) {
     /**
      * I passi di un percorso (es. «Dati → Turni → Modulo → Pubblica»): lista ordinata, il passo in corso ha aria-current="step".
-     * Ogni passo: titolo, stato (fatto · corrente · da_fare · bloccato), link facoltativo, nota facoltativa («manca: firma del Direttore»).
+     * Ogni passo: titolo, stato (fatto · corrente · da_fare · bloccato · fermo = chiuso senza arrivare in fondo, grigio), link facoltativo, nota facoltativa («manca: firma del Direttore»).
      * Senza stato si ricava da $corrente (prima = fatto, quello = corrente, dopo = da_fare). $corrente = posizione (da 0) del passo in corso,
      * -1 se è tutto fatto. $dimensione: «normale» o «piccolo». Sul telefono i passi vanno uno sotto l'altro. Stile: assets/css/portale-ui.css (.ui-percorso; .ui-passi è un'altra cosa, la barra della FSL delle scuole).
      * Il segno dello stato non è solo un colore: icona o numero più una scritta per chi usa uno screen reader.
@@ -83,7 +83,7 @@ if (!function_exists('ui_passi')) {
      */
     function ui_passi(array $passi, int $corrente, string $dimensione = 'normale', string $etichetta = 'Passi da seguire'): string {
         $h = static fn (string $s): string => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
-        $stati = ['fatto' => ['fa-check', 'fatto'], 'corrente' => ['', 'passo attuale'], 'da_fare' => ['', 'da fare'], 'bloccato' => ['fa-lock', 'bloccato']];
+        $stati = ['fatto' => ['fa-check', 'fatto'], 'corrente' => ['', 'passo attuale'], 'da_fare' => ['', 'da fare'], 'bloccato' => ['fa-lock', 'bloccato'], 'fermo' => ['fa-xmark', 'fermato qui']];
         $o = '<ol class="ui-percorso' . ($dimensione === 'piccolo' ? ' ui-percorso-piccolo' : '') . '" aria-label="' . $h($etichetta) . '">';
         $n = 0;
         foreach (array_values($passi) as $i => $p) {

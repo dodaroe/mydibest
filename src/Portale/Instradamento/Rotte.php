@@ -10,6 +10,9 @@ use App\Portale\Pagine\PaginaContatti;
 use App\Portale\Pagine\PaginaContattiPannello;
 use App\Portale\Pagine\PaginaNumeriFsl;
 use App\Portale\Pagine\PaginaScuoleFsl;
+use App\Portale\Pagine\PaginaSos;
+use App\Portale\Pagine\PaginaSosCartello;
+use App\Portale\Pagine\PaginaSosPannello;
 use App\Portale\Pagine\PaginaStampaRicevuta;
 
 /**
@@ -33,9 +36,13 @@ final class Rotte
         return [
             new Rotta('contatti', PaginaContatti::class, 'Contatti', 'contatti.php'),
             new Rotta('approva_pubblicazioni', PaginaApprovaPubblicazioni::class, 'Richieste di pubblicazione da approvare', 'approva_pubblicazioni.php'),
+            new Rotta('sos', PaginaSos::class, 'SOS assistenza didattica', 'sos.php'),
+            new Rotta('sos_interventi', \App\Portale\Pagine\PaginaSosInterventi::class, 'SOS aule · Interventi', 'sos_interventi.php'),
             new Rotta('admin/contatti', PaginaContattiPannello::class, 'Sito pubblico › Contatti', 'admin/contatti.php'),
             new Rotta('admin/fsl', PaginaNumeriFsl::class, 'Formazione Scuola Lavoro › Numeri e report', 'admin/fsl.php'),
             new Rotta('admin/fsl_scuole', PaginaScuoleFsl::class, 'Formazione Scuola Lavoro › Scuole e convenzioni', 'admin/fsl_scuole.php'),
+            new Rotta('admin/sos_aule', PaginaSosPannello::class, 'Amministrazione › SOS aule', 'admin/sos_aule.php'),
+            new Rotta('admin/sos_cartello', PaginaSosCartello::class, 'Amministrazione › SOS aule › Cartelli', 'admin/sos_cartello.php'),
             new Rotta('stampa_ricevuta', PaginaStampaRicevuta::class, 'Ricevuta di prenotazione', 'stampa_ricevuta.php'),
         ];
     }

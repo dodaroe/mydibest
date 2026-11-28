@@ -285,12 +285,12 @@ prova(count($lav_ref) === 1 && $lav_ref[0]['chiave'] === 'sedute' && $lav_ref[0]
 $lav_fermo = PostazioniLavoro::elenco(['didattica_tutto' => true], ['smistare' => 1, 'smistare_giorni' => 2]);
 prova(count($lav_fermo) === 1 && $lav_fermo[0]['altri'][0][3] === false, "il mio lavoro: niente protocollo se non c'è nulla da protocollare e nessun avviso per una pratica arrivata da poco");
 $lav_adm = PostazioniLavoro::elenco(array_fill_keys(PostazioniLavoro::PERMESSI, true), ['protocollare' => 1]);
-prova(count($lav_adm) === 10 && end($lav_adm)['titolo'] === 'Pannello di gestione' && count(array_unique(array_column($lav_adm, 'chiave'))) === count($lav_adm), "il mio lavoro: l'amministratore ha tutte le postazioni, una volta sola");
+prova(count($lav_adm) === 11 && end($lav_adm)['titolo'] === 'Pannello di gestione' && count(array_unique(array_column($lav_adm, 'chiave'))) === count($lav_adm), "il mio lavoro: l'amministratore ha tutte le postazioni, una volta sola");
 $lav_ok = true;
 foreach ($lav_adm as $v_l) $lav_ok = $lav_ok && is_file(__DIR__ . '/../../../' . strtok($v_l['href'], '?')) && RiquadriRepository::iconaValida($v_l['icona']) && RiquadriRepository::coloreValido($v_l['colore'])
     && array_reduce($v_l['altri'], fn($c, $a) => $c && is_file(__DIR__ . '/../../../' . strtok($a[1], '?')), true);
 prova($lav_ok, "il mio lavoro: ogni tessera e ogni pulsante portano a una pagina che esiste");
-prova(in_array('lavoro', array_keys(CatalogoRiquadri::sistema()), true) && !in_array(Profili::STUDENTE, CatalogoRiquadri::sistema()['lavoro']['profili'], true), "il mio lavoro: è un riquadro di sistema e non lo vedono gli studenti");
+prova(in_array('lavoro', array_keys(CatalogoRiquadri::sistema()), true) && in_array(Profili::STUDENTE, CatalogoRiquadri::sistema()['lavoro']['profili'], true), "il mio lavoro: è un riquadro di sistema e lo hanno anche gli studenti (i part-time di SOS aule)");
 $dopo_lav = (string) file_get_contents(__DIR__ . '/../../../admin/admin_header.php');
 prova(str_contains($dopo_lav, '../area_personale.php'), "il pannello ha il pulsante per tornare all'area personale");
 

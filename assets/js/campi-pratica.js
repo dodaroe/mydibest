@@ -12,6 +12,9 @@
     var script = document.currentScript;
     var BASE = (script && script.dataset.base) || '';
     var URL_CAT = BASE + '/cerca_insegnamenti.php';
+    // Cosa dire se l'insegnamento non c'è: di partenza «scrivilo a mano»; una pagina dove a mano non si può lo cambia con data-se-manca e data-anno-vuoto sul tag dello script
+    var SE_MANCA = (script && script.dataset.seManca) || 'Se non lo trovi chiudi e scrivilo a mano.';
+    var ANNO_VUOTO = (script && script.dataset.annoVuoto) || 'Nessun insegnamento per questo anno: prova un altro anno o scrivilo a mano.';
 
     // ── Tabelle a righe ──────────────────────────────────────────────────────
     document.addEventListener('click', function (e) {
@@ -158,7 +161,7 @@
         dlg.setAttribute('aria-labelledby', 'insDlgTit');
         dlg.innerHTML = '<form method="dialog" class="p-3">'
             + '<h2 class="h5 fw-bold mb-1" id="insDlgTit">Scegli l\'insegnamento</h2>'
-            + '<p class="small text-secondary mb-3">Dal catalogo dei corsi di studio dell\'Università della Calabria. Se non lo trovi chiudi e scrivilo a mano.</p>'
+            + '<p class="small text-secondary mb-3" id="insNota">Dal catalogo dei corsi di studio dell\'Università della Calabria. </p>'
             + '<div class="row g-2">'
             + '<div class="col-md-6"><label class="form-label small fw-bold mb-0" for="insTipo">1. Tipo di corso</label><select class="form-select form-select-sm" id="insTipo"></select></div>'
             + '<div class="col-md-6"><label class="form-label small fw-bold mb-0" for="insAa">2. Anno accademico di offerta</label><select class="form-select form-select-sm" id="insAa"></select></div>'
@@ -170,6 +173,7 @@
             + '<button type="button" class="btn btn-sm btn-outline-secondary" id="insAnnulla">Annulla</button>'
             + '<button type="button" class="btn btn-sm btn-primary fw-bold" id="insUsa" disabled>Usa questo insegnamento</button></div></form>';
         document.body.appendChild(dlg);
+        dlg.querySelector('#insNota').appendChild(document.createTextNode(SE_MANCA));
         var tipo = dlg.querySelector('#insTipo'), corso = dlg.querySelector('#insCorso'), anno = dlg.querySelector('#insAa'),
             ins = dlg.querySelector('#insIns'), cerca = dlg.querySelector('#insCerca'), stato = dlg.querySelector('#insStato'), usa = dlg.querySelector('#insUsa'),
             scheda = dlg.querySelector('#insScheda'), voci = {};
@@ -197,7 +201,7 @@
             if (!corso.value) { azzeraIns(); return; }
             json('azione=insegnamenti&cds=' + encodeURIComponent(corso.value) + '&aa=' + encodeURIComponent(anno.value)).then(function (el) {
                 ins.innerHTML = ''; ins.disabled = !el.length; cerca.disabled = !el.length; cerca.value = '';
-                stato.textContent = el.length ? el.length + ' insegnamenti' : 'Nessun insegnamento per questo anno: prova un altro anno o scrivilo a mano.';
+                stato.textContent = el.length ? el.length + ' insegnamenti' : ANNO_VUOTO;
                 voci = {};
                 el.forEach(function (i) {
                     var o = opt(ins, i.id, (i.integrato ? 'Integrato: ' : '') + i.nome + info(i, true), { chiave: (i.nome + ' ' + (i.codice || '') + ' ' + (i.moduli || []).map(function (m) { return m.nome; }).join(' ')).toLowerCase() });

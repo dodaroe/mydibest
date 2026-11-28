@@ -49,6 +49,7 @@ if (!defined('PAGINE_MODULO')) define('PAGINE_MODULO', [
     'didattica.php' => 'didattica', 'tutorato.php' => 'didattica', 'convenzioni_tesi.php' => 'didattica', 'assistenza.php' => 'didattica', 'didacticus.php' => 'didattica', 'sostituzioni.php' => 'didattica', 'tirocini.php' => 'didattica', 'tirocini_motorie.php' => 'didattica',
     'forms.php' => 'forms', 'forms_risposte.php' => 'forms',
     'amministrazione.php' => 'amministrazione', 'pubblicazioni.php' => 'amministrazione',
+    'sos_aule.php' => 'amministrazione', 'sos_cartello.php' => 'amministrazione',
     // Persone e permessi
     'utenti.php' => 'persone', 'uffici.php' => 'persone', 'uffici_ateneo.php' => 'persone',
     'anagrafe_personale.php' => 'persone', 'anagrafe_docenti.php' => 'persone', 'anagrafe_pta.php' => 'persone', 'anagrafe_insegnamenti.php' => 'persone',

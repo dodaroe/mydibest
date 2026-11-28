@@ -44,6 +44,17 @@ echo "Inizio Esecuzione CRON: $now\n";
 echo $cron->autoArchiviazione();
 
 // =========================================================================
+// TASK 0b: SOS AULE: un solo promemoria per le segnalazioni che nessuno ha preso entro i minuti scelti nelle impostazioni; foto delle segnalazioni
+// chiuse cancellate dopo i giorni di conservazione. Sta in alto perché è il compito che non può aspettare gli altri.
+// =========================================================================
+try {
+    echo \App\Core\App::get(\App\SosAule\CronSos::class)->cron();
+    \App\Core\App::get(\App\Sistema\StatoCron::class)->registra('cron_sos'); // per il controllo di salute in Sistema
+} catch (\Throwable $e) {
+    error_log('Cron, SOS aule: ' . $e->getMessage());
+}
+
+// =========================================================================
 // TASK 1: EMAIL POST-EVENTO (Attestati e Sondaggi)
 // Seleziona i presenti a eventi finiti, a cui NON è ancora stata mandata l'email
 // Progetti: solo a progetto concluso (data di fine passata)

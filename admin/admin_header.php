@@ -498,7 +498,8 @@ $colore_lato = ['sistema' => '#64748b', 'persone' => '#818cf8', 'sito' => '#e879
                     if ($puo_pubblicazioni) $voce_menu([], 'pubblicazioni.php?vista=arrivate', 'fa-bullhorn', 'Richieste di pubblicazione', $current_page === 'pubblicazioni.php' && !$in_da_compilare, $n_pubblicazioni_menu);
                     if ($puo_pubblicazioni) $voce_menu([], 'pubblicazioni.php?vista=da_compilare', 'fa-pen-to-square', 'Da compilare', $in_da_compilare, $n_da_compilare_menu);
                     if ($puo_amministrazione) $voce_menu([], 'amministrazione.php?tab=impostazioni', 'fa-sliders', 'Impostazioni', $tab_amm === 'impostazioni');
-                    if ($puo_amministrazione) $voce_menu([], 'amministrazione.php?tab=campi', 'fa-table-list', 'Campi e colonne', $tab_amm === 'campi'); ?>
+                    if ($puo_amministrazione) $voce_menu([], 'amministrazione.php?tab=campi', 'fa-table-list', 'Campi e colonne', $tab_amm === 'campi');
+                    if ($puo_amministrazione) $voce_menu(['sos_aule.php', 'sos_cartello.php'], 'sos_aule.php', 'fa-life-ring', 'SOS aule'); ?>
                 <?php endif; ?>
 
                 <?php if (in_array($modulo_corrente, ['persone', 'sito', 'sistema'], true)): // moduli di sole pagine proprie: elenco semplice, le voci sono in MenuModuli ?>

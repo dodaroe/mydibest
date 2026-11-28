@@ -388,6 +388,9 @@ a.ui-passo-corpo:focus-visible { outline: 2px solid var(--dibest-informazione); 
 .ui-passo[data-stato="bloccato"] .ui-passo-corpo { border-color: var(--dibest-pericolo); }
 .ui-passo[data-stato="bloccato"] .ui-passo-segno { border-color: var(--dibest-pericolo); background: var(--dibest-pericolo-sfondo); color: var(--dibest-pericolo-testo); }
 .ui-passo[data-stato="bloccato"] .ui-passo-nota { color: var(--dibest-pericolo-testo); }
+.ui-passo[data-stato="fermo"] .ui-passo-corpo { background: var(--dibest-neutro-sfondo); color: var(--dibest-neutro-testo); }
+.ui-passo[data-stato="fermo"] .ui-passo-segno { border-color: var(--dibest-neutro-testo); }
+.ui-passo[data-stato="fermo"] .ui-passo-nota { color: var(--dibest-neutro-testo); }
 .ui-percorso-piccolo { gap: .35rem; }
 .ui-percorso-piccolo .ui-passo { flex: 0 1 auto; }
 .ui-percorso-piccolo .ui-passo-corpo { padding: .3rem .55rem; gap: .4rem; border-radius: 8px; }
@@ -587,4 +590,171 @@ html[data-tema="scuro"] body.ui-scuro-ok .ui-barra-tel a[aria-current="page"] { 
     .ui-comp-nota { flex-basis: 100%; }
     .ui-comp-esito.dentro { margin: 0 14px 12px; }
     .ui-comp-valori { grid-template-columns: minmax(0, 1fr); padding: 4px 14px 8px; }
+}
+
+/* ── SOS aule: la pagina del docente (sos.php) ── */
+.ui-sos-pagina { max-width: 640px; margin: 0 auto; padding: 16px 12px 32px; color: var(--ui-testo); overflow-wrap: anywhere; }
+.ui-sos-pagina h1 { font-size: 1.5rem; font-weight: 700; margin: 0 0 4px; color: var(--ui-testo); }
+.ui-sos-sotto { color: var(--ui-testo-2); font-size: .95rem; margin: 0 0 14px; }
+.ui-sos-box { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; margin-bottom: 14px; border-radius: 12px; border: 1px solid transparent; }
+.ui-sos-box > .fa { font-size: 1.3rem; margin-top: 3px; }
+.ui-sos-box > div { min-width: 0; flex: 1 1 auto; }
+.ui-sos-box p { margin: 0; }
+.ui-sos-box.ok { background: var(--ui-ok-bg); color: var(--ui-ok-fg); }
+.ui-sos-box.attesa { background: var(--ui-attesa-bg); color: var(--ui-attesa-fg); }
+.ui-sos-box.azione { background: var(--ui-azione-bg); color: var(--ui-azione-fg); }
+.ui-sos-box.info { background: var(--ui-info-bg); color: var(--ui-info-fg); }
+.ui-sos-box.neutro { background: var(--ui-neutro-bg); color: var(--ui-neutro-fg); }
+.ui-sos-box p, .ui-sos-box strong { color: inherit; }
+.ui-sos-box a:not(.btn) { color: inherit; font-weight: 700; text-decoration: underline; }
+.ui-sos-box .btn { background: var(--ui-card); color: var(--ui-testo); border: 1px solid var(--ui-bordo); }
+.ui-sos-box details > summary { list-style: none; }
+.ui-sos-box details > summary::-webkit-details-marker { display: none; }
+.ui-sos-box details[open] { flex: 1 1 100%; }
+.ui-sos-box details form { margin-top: 8px; }
+.ui-sos-qui { border: 2px solid var(--ui-rosso-testo); border-radius: 14px; padding: 12px 16px; margin-bottom: 14px; background: var(--ui-card); }
+.ui-sos-qui > summary { list-style: none; cursor: pointer; }
+.ui-sos-qui > summary::-webkit-details-marker { display: none; }
+.ui-sos-qui-nome { display: block; font-size: 1.35rem; font-weight: 700; }
+.ui-sos-qui-nome strong { font-size: 1.9rem; }
+.ui-sos-cambia { color: var(--dibest-blu-testo); font-weight: 700; text-decoration: underline; }
+.ui-sos-docente { background: var(--ui-lieve); border: 1px solid var(--ui-bordo); border-radius: 12px; padding: 10px 14px; margin-bottom: 18px; }
+.ui-sos-gruppo { border: 0; margin: 0 0 18px; padding: 0; min-width: 0; }
+.ui-sos-titolo { display: block; float: none; width: auto; font-size: 1.05rem; font-weight: 700; margin: 0 0 8px; padding: 0; color: var(--ui-testo); }
+legend.ui-sos-titolo { float: left; width: 100%; }
+legend.ui-sos-titolo + * { clear: both; }
+.ui-sos-facoltativo { font-weight: 400; font-size: .85rem; color: var(--ui-testo-2); }
+.ui-sos-gruppo.errore { border: 2px solid var(--dibest-pericolo-forte); border-radius: 12px; padding: 10px 12px; }
+.ui-sos-gruppo.errore .ui-comp-errore { margin: 0 0 8px; }
+.ui-sos-scelta { position: relative; display: flex; min-width: 0; }
+.ui-sos-scelta input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.ui-sos-scelta label { width: 100%; margin: 0; cursor: pointer; background: var(--ui-card); color: var(--ui-testo); border-width: 2px; line-height: 1.25; }
+.ui-sos-scelta input:checked + label { border-color: var(--dibest-informazione); background: var(--ui-info-bg); color: var(--ui-info-fg); }
+.ui-sos-scelta input:checked + label small { color: inherit; }
+.ui-sos-scelta input:focus-visible + label { outline: 3px solid var(--dibest-informazione); outline-offset: 2px; }
+.ui-sos-pagina .ui-sos-tipi > .ui-sos-scelta:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.ui-sos-urgenze { display: grid; gap: 8px; }
+.ui-sos-urgenza { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 10px 14px; border: 2px solid var(--ui-bordo); border-radius: 12px; font-weight: 700; font-size: 1.05rem; }
+.ui-sos-scelta input + .ui-sos-urgenza.ferma { border-color: var(--dibest-pericolo-forte); color: var(--dibest-pericolo-testo); background: var(--dibest-pericolo-sfondo-lieve); }
+.ui-sos-scelta input:checked + .ui-sos-urgenza.ferma { background: var(--dibest-rosso); border-color: var(--dibest-rosso); color: #fff; }
+.ui-sos-foto { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 12px; border: 2px dashed var(--ui-bordo); border-radius: 12px; text-align: center; background: var(--ui-lieve); font-weight: 700; margin: 0; cursor: pointer; }
+.ui-sos-foto .fa { font-size: 1.8rem; color: var(--ui-testo-2); }
+.ui-sos-foto input { max-width: 100%; font-size: .85rem; font-weight: 400; }
+.ui-sos-invia { width: 100%; }
+.ui-sos-pagina textarea.form-control, .ui-sos-pagina input.form-control, .ui-sos-pagina select.form-select { border: 1px solid var(--ui-testo-2); border-radius: 8px; }
+.ui-sos-riquadro { background: var(--ui-card); border: 1px solid var(--ui-bordo); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 1px 6px var(--ui-ombra); }
+.ui-sos-riquadro h2 { font-size: 1.05rem; font-weight: 700; margin: 0 0 10px; color: var(--ui-testo); }
+.ui-sos-cronologia { list-style: none; margin: 0; padding: 0; }
+.ui-sos-cronologia li { display: flex; gap: 12px; padding: 7px 0; border-top: 1px solid var(--ui-bordo); }
+.ui-sos-cronologia li:first-child { border-top: 0; }
+.ui-sos-cronologia time { flex: 0 0 3.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ui-sos-mia { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 10px; padding: 10px 0; border-top: 1px solid var(--ui-bordo); color: var(--ui-testo); text-decoration: none; }
+.ui-sos-mia:first-of-type { border-top: 0; }
+.ui-sos-mia small { display: block; color: var(--ui-testo-2); }
+@media (max-width: 575.98px) {
+    .ui-sos-pagina .btn { min-height: 44px; }
+    .ui-sos-pagina .ap-grande { width: 100%; }
+    .ui-sos-box .ui-sos-azioni .btn { width: 100%; }
+    .ui-sos-box .ui-sos-azioni > * { flex: 1 1 100%; }
+}
+
+/* ── SOS aule: la pagina di chi interviene (sos_interventi.php) ── */
+.ui-sos-pagina.larga { max-width: 960px; }
+.ui-sos-notifiche { width: 100%; margin-bottom: 12px; }
+.ui-sos-linguette { display: flex; gap: 4px; padding: 4px; margin-bottom: 14px; background: var(--ui-neutro-bg); border: 1px solid var(--ui-bordo); border-radius: 14px; }
+.ui-sos-linguette a { flex: 1 1 0; display: flex; align-items: center; justify-content: center; text-align: center; min-width: 0; min-height: 48px; padding: 4px 6px; border-radius: 10px; font-weight: 700; line-height: 1.2; color: var(--ui-testo-2); text-decoration: none; }
+html[data-tema="scuro"] body.ui-scuro-ok .ui-sos-linguette a:not(.btn):not(.nav-link):not(.ui-tessera-titolo):not(.dropdown-item) { color: var(--ui-testo-2); }
+.ui-sos-linguette a[aria-current="page"], html[data-tema="scuro"] body.ui-scuro-ok .ui-sos-linguette a[aria-current="page"]:not(.btn):not(.nav-link):not(.ui-tessera-titolo):not(.dropdown-item) { background: var(--ui-card); color: var(--ui-testo); box-shadow: 0 1px 4px var(--ui-ombra); }
+.ui-sos-elenco { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); gap: 16px; align-items: start; }
+.ui-sos-card { background: var(--ui-card); border: 1px solid var(--ui-bordo); border-left: 6px solid var(--ui-bordo); border-radius: 14px; padding: 14px; box-shadow: 0 2px 10px var(--ui-ombra); min-width: 0; scroll-margin-top: 12px; }
+.ui-sos-card.ferma { border-left-color: var(--dibest-pericolo-forte); }
+.ui-sos-card.aiuto { border-left-color: var(--dibest-attenzione); }
+.ui-sos-card-testa { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 6px 12px; }
+.ui-sos-pagina .ui-sos-aula-nome { font-size: 2.4rem; font-weight: 700; line-height: 1.05; margin: 0; color: var(--ui-testo); }
+.ui-sos-edificio { color: var(--ui-testo-2); font-size: .9rem; }
+.ui-sos-quando { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; margin-left: auto; text-align: right; max-width: 58%; min-width: 0; }
+.ui-sos-quando .ui-stato { white-space: normal; }
+.ui-sos-da { font-weight: 700; font-size: .95rem; max-width: 100%; white-space: normal; padding-right: 2px; } /* va a capo; i 2px tengono l'ultima lettera staccata dal margine */
+.ui-stato.ui-sos-ferma { background: var(--dibest-rosso); color: #fff; }
+.ui-sos-problema { display: flex; align-items: center; gap: 10px; font-size: 1.15rem; font-weight: 700; margin: 10px 0 8px; }
+.ui-sos-problema .fa { width: 28px; text-align: center; font-size: 1.35rem; }
+.ui-sos-chi { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0; border-top: 1px solid var(--ui-bordo); }
+.ui-sos-descrizione { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 8px; }
+.ui-sos-descrizione p { margin: 0; flex: 1 1 auto; min-width: 0; }
+.ui-sos-miniatura { flex: 0 0 72px; width: 72px; height: 72px; border-radius: 8px; border: 1px solid var(--ui-bordo); overflow: hidden; display: block; }
+.ui-sos-miniatura img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ui-sos-in-mano { font-size: .88rem; color: var(--ui-testo-2); margin: 8px 0; }
+.ui-sos-dati { list-style: none; margin: 0 0 8px; padding: 0; font-size: .92rem; overflow-wrap: anywhere; }
+.ui-sos-dati li { margin: 0 0 2px; }
+.ui-sos-dati span { color: var(--ui-testo-2); }
+/* il registro del pannello */
+.ui-sos-intestazione { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.ui-sos-riga { background: var(--ui-card); border: 1px solid var(--ui-bordo); border-radius: 12px; margin-bottom: 8px; min-width: 0; overflow-wrap: anywhere; }
+.ui-sos-riga > summary { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 10px 14px; cursor: pointer; list-style: none; }
+.ui-sos-riga > summary::-webkit-details-marker { display: none; }
+.ui-sos-riga-titolo { flex: 1 1 200px; min-width: 0; }
+.ui-sos-riga > summary .ui-stato { white-space: normal; }
+.ui-sos-riga-sotto { flex: 1 1 100%; font-size: .85rem; color: var(--ui-testo-2); }
+.ui-sos-riga-corpo { padding: 10px 14px; border-top: 1px solid var(--ui-bordo); }
+.ui-sos-cronologia.con-giorno time { flex-basis: 5.6rem; font-size: .88rem; }
+.ui-sos-comandi { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.ui-sos-comandi > * { min-width: 0; margin: 0; }
+.ui-sos-comandi .btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: .5rem .6rem; line-height: 1.2; text-align: center; white-space: normal; }
+.ui-sos-comandi > .intero, .ui-sos-comandi > details[open] { grid-column: 1 / -1; }
+.ui-sos-comandi details > summary { list-style: none; cursor: pointer; }
+.ui-sos-comandi details > summary::-webkit-details-marker { display: none; }
+.ui-sos-comandi > details:not([open]) > summary { height: 100%; }
+.ui-sos-pannello { margin: 8px 0 0; padding: 12px; border: 1px solid var(--ui-bordo); border-radius: 12px; background: var(--ui-lieve); }
+.ui-sos-pannello .ui-sos-tipo { min-height: 64px; font-size: .92rem; }
+.ui-sos-pannello label.form-check { display: flex; align-items: center; min-height: 44px; margin: 0; padding: 0; }
+.ui-sos-pagina .ui-sos-storia { margin-top: 12px; border-top: 1px solid var(--ui-bordo); padding-top: 10px; }
+.ui-sos-storia-link { display: inline-block; margin-top: 10px; padding: 8px 0; font-weight: 700; color: var(--dibest-blu-testo); }
+@media (max-width: 575.98px) {
+    .ui-sos-elenco { grid-template-columns: minmax(0, 1fr); }
+    .ui-sos-linguette a { font-size: .9rem; }
+    .ui-sos-pagina .ui-sos-aula-nome { font-size: 2.2rem; }
+}
+
+/* ── SOS aule: la configurazione (admin/sos_aule.php) ── */
+.ui-sos-aula { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; }
+.ui-sos-riquadro-qr { flex: none; width: 120px; padding: 4px; background: #fff; border: 1px solid var(--ui-bordo); border-radius: 8px; }
+.ui-sos-qr { width: 100%; }
+.ui-sos-testo { flex: 1 1 240px; min-width: 0; overflow-wrap: anywhere; }
+.ui-sos-azioni { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.ui-sos-dettagli { margin-top: 8px; }
+.ui-sos-dettagli > summary { cursor: pointer; font-weight: 700; }
+.ui-sos-lista { list-style: none; margin: 0 0 4px; padding: 0; }
+.ui-sos-lista > li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--ui-bordo); }
+.ui-sos-avviso { color: var(--ui-azione-fg); font-size: .85rem; font-weight: 700; }
+.ui-sos-obbligatorio { color: var(--ui-azione-fg); }
+.ui-sos-campo { min-width: 0; border: 1px solid var(--ui-bordo); border-radius: 10px; padding: 10px 12px 2px; margin-bottom: 10px; }
+.ui-sos-anteprima { min-width: 0; max-width: 520px; border: 1px solid var(--ui-bordo); border-radius: 14px; padding: 16px; }
+.ui-sos-tipi { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.ui-sos-tipo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 78px; padding: 8px; text-align: center; border: 1px solid var(--ui-bordo); border-radius: 10px; font-weight: 700; overflow-wrap: anywhere; }
+.ui-sos-tipo .fa { font-size: 1.4rem; }
+.ui-sos-tipo small { font-weight: 400; color: var(--ui-testo-2); }
+
+/* ── I cartelli di SOS aule (admin/sos_cartello.php): il foglio resta bianco anche col tema scuro ── */
+.ui-cartelli-barra { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
+.ui-cartelli .ui-cartello { max-width: 190mm; margin: 0 auto 24px; padding: 24px 16px; background: #fff; color: #111; text-align: center; border: 1px solid var(--ui-bordo); border-radius: 12px; overflow-wrap: anywhere; }
+.ui-cartelli .ui-cartello p, .ui-cartelli .ui-cartello h2, .ui-cartelli .ui-cartello li, .ui-cartelli .ui-cartello strong { color: #111; }
+.ui-cartelli .ui-cartello-titolo { margin: 0; font-size: 1.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--dibest-rosso); }
+.ui-cartelli .ui-cartello-nome { margin: 4px 0 0; font-size: 3.6rem; font-weight: 800; line-height: 1.1; }
+.ui-cartelli .ui-cartello-edificio { margin: 4px 0 0; font-size: 1.4rem; }
+.ui-cartello-riquadro { width: min(115mm, 100%); margin: 16px auto; }
+.ui-cartello-qr { width: 100%; }
+.ui-cartello-passi { margin: 0 auto 16px; padding: 0; list-style-position: inside; font-size: 1.35rem; font-weight: 700; line-height: 1.7; }
+.ui-cartelli .ui-cartello-telefono { margin: 0 0 12px; font-size: 1.15rem; }
+.ui-cartelli .ui-cartello-indirizzo { margin: 0; font-size: .8rem; word-break: break-all; }
+@page ui-cartello { size: A4 portrait; margin: 10mm; }
+@media print {
+    /* si stampano solo i fogli: via tutto quello che il pannello mette intorno */
+    body:has(.ui-cartelli) > :not(#wrapper), body:has(.ui-cartelli) #wrapper > :not(#page-content-wrapper),
+    body:has(.ui-cartelli) #page-content-wrapper > :not(#contenuto-pannello), body:has(.ui-cartelli) #contenuto-pannello > :not(.ui-cartelli),
+    .ui-cartelli-barra { display: none !important; }
+    body:has(.ui-cartelli), body:has(.ui-cartelli) #wrapper, body:has(.ui-cartelli) #page-content-wrapper, body:has(.ui-cartelli) #contenuto-pannello {
+        display: block !important; width: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; background: #fff !important;
+    }
+    .ui-cartelli .ui-cartello { page: ui-cartello; max-width: none; margin: 0; padding: 0; border: 0; border-radius: 0; break-after: page; break-inside: avoid; }
+    .ui-cartelli .ui-cartello:last-child { break-after: auto; }
 }

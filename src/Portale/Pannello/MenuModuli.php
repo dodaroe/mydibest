@@ -98,6 +98,7 @@ final class MenuModuli
             ['id' => 'da_compilare', 'href' => 'pubblicazioni.php?vista=da_compilare', 'icona' => 'fa-pen-to-square', 'testo' => 'Da compilare', 'permessi' => ['puo_pubblicazioni'], 'pagine' => [], 'a_mano' => true],
             ['id' => 'impostazioni', 'href' => 'amministrazione.php?tab=impostazioni', 'icona' => 'fa-sliders', 'testo' => 'Impostazioni', 'permessi' => ['puo_amministrazione'], 'pagine' => [], 'a_mano' => true],
             ['id' => 'campi', 'href' => 'amministrazione.php?tab=campi', 'icona' => 'fa-table-list', 'testo' => 'Campi e colonne', 'permessi' => ['puo_amministrazione'], 'pagine' => [], 'a_mano' => true],
+            ['id' => 'sos_aule', 'href' => 'sos_aule.php', 'icona' => 'fa-life-ring', 'testo' => 'SOS aule', 'permessi' => ['puo_amministrazione'], 'pagine' => ['sos_aule.php', 'sos_cartello.php'], 'a_mano' => true],
         ],
         'persone' => [
             ['id' => 'utenti', 'href' => 'utenti.php', 'icona' => 'fa-users-cog', 'testo' => 'Utenti e abilitazioni', 'permessi' => ['is_full_admin'], 'pagine' => ['utenti.php'],

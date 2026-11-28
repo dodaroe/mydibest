@@ -1,0 +1,136 @@
+AGGIORNAMENTO DEL PORTALE IN DUE TEMPI - prima la COPIA DI PROVA, poi il SITO VERO
+SOS aule: richiesta di aiuto dal QR in aula, referenti e studenti part-time, registro
+Pacchetto: aggiornamento_completo.tgz (strumenti/crea_pacchetto.sh)  -  commit: ________  -  aggiornato il: ________
+====================================================================================================
+SCHEMA DEL DATABASE: fino alla 147. Nessun comando SQL: si aggiorna da solo al primo accesso a una pagina del pannello.
+Si AGGIUNGE soltanto (nessuna colonna o tabella tolta).
+  v147  tabelle nuove sos_aule, sos_referenti, sos_studenti, sos_segnalazioni, sos_cronologia       (vuote)
+        tabelle nuove sos_tipi e sos_esiti                  (con i 9 tipi di problema e i 5 esiti di partenza)
+        impostazioni: colonne sos_*                          (IL MODULO NASCE SPENTO)
+        «Il mio lavoro» dell'area personale anche al profilo studente, solo dove i profili di quel riquadro non erano
+        stati cambiati (la tessera «SOS aule» compare solo a chi ne ha almeno una)
+Se sul server non hai ancora caricato le richieste di pubblicazione con approvazione (schema 146) o le convenzioni
+(schema 135-145), il pacchetto le porta insieme: fai ANCHE i controlli, le cartelle e la configurazione di
+documentazione/istruzioni_aggiornamento_approvazione.txt e istruzioni_aggiornamento_convenzioni.txt.
+
+APPENA CARICATO, PRIMA DI CONFIGURARE QUALSIASI COSA: il modulo e' spento. sos.php dice che il servizio non e' attivo e
+per chi usa il portale non cambia niente.
+
+COSA IL PACCHETTO NON PORTA: strumenti/ (va copiato a parte crea_ambiente_prova.sh, che e' cambiato: vedi P2), la
+documentazione e il .htaccess della radice (invariato). Il file didacticus_voci_sos_aule_28112026.csv si importa a mano
+dal pannello (vedi «DOPO IL CARICAMENTO»).
+
+PREPARAZIONE (dal tuo computer, Git Bash nella cartella del portale)
+ P0) Il commit (lo fai tu): i due comandi sono scritti in cima a documentazione/commit_sos_aule.txt.
+ P1) Crea il pacchetto. Deve finire con "Commit incluso: ...". L'unica modifica non committata che puo' segnalare e'
+     .gitignore (non c'entra con questo lavoro e non entra nel pacchetto); se ne segnala altre, fermati.
+      bash strumenti/crea_pacchetto.sh
+ P2) Copia sul server il pacchetto e lo script della copia di prova. Da PowerShell:
+      scp "G:\Il mio Drive\SITI WEB\Eventi DiBEST\sito_claude\aggiornamento_completo.tgz" "G:\Il mio Drive\SITI WEB\Eventi DiBEST\sito_claude\strumenti\crea_ambiente_prova.sh" dodaroe@160.97.37.188:~/
+
+TEMPO 1 - LA COPIA DI PROVA (sul server)
+ 1) Aggiorna SOLO il codice della copia:
+      sudo bash ~/crea_ambiente_prova.sh aggiorna-codice --pacchetto ~/aggiornamento_completo.tgz
+    Deve finire con "CODICE DELLA COPIA AGGIORNATO". Se finisce con un ERRORE la copia e' in pausa: NON passare al tempo 2.
+ 2) (Facoltativo, PRIMA di configurare: cancella quello che hai provato nella copia) Dati piu' freschi e anonimi:
+      sudo bash ~/crea_ambiente_prova.sh aggiorna-dati --anonimizza
+ 3) Apri https://dibest2.unical.it/mydibest_pp/admin/ : lo schema passa alla v147. Se compare un errore, fermati e
+    scrivimelo.
+ 4) Cartella delle foto (si crea da sola alla prima foto; creandola subito controlli che sia scrivibile e chiusa al web):
+      cd /opt/lampp/htdocs/mydibest_pp/uploads
+      sudo mkdir -p sos; printf '# Cartella chiusa al web: le foto si vedono solo dalle pagine del portale\nRequire all denied\n' | sudo tee sos/.htaccess > /dev/null; sudo chown -R daemon sos
+      echo prova | sudo tee sos/_prova.txt > /dev/null; curl -s -o /dev/null -w '%{http_code}\n' https://dibest2.unical.it/mydibest_pp/uploads/sos/_prova.txt; sudo rm sos/_prova.txt
+    Deve rispondere 403.
+ 5) PROVA (fascia arancione; le email vanno solo all'indirizzo di prova; la copia si apre solo dalla rete di Ateneo,
+    quindi il telefono deve stare su eduroam o in VPN; dalla copia le notifiche sul telefono non partono).
+    «Entra come...» e' di SOLA LETTURA: serve a vedere che cosa vede un profilo, non a premere i pulsanti.
+    a. Amministrazione -> SOS aule: un'aula di prova; in «Persone» te come referente (dall'anagrafe) e uno studente;
+       in «Impostazioni» il telefono di riserva, poi «Aperto» (non si accende se nessuno riceverebbe le segnalazioni).
+    b. «Stampa il cartello» (l'anteprima basta): aula, QR, telefono di riserva. NON affiggere i cartelli della copia: il loro
+       QR porta a mydibest_pp.
+    c. Con «Entra come...»: da docente apri il modulo dell'aula; da referente e da studente apri
+       .../mydibest_pp/sos_interventi.php e «Il mio lavoro».
+    d. Segnalazione finta dal QR («Prova il QR» o il telefono) con il tuo account, descrizione «PROVA da cancellare»,
+       senza foto. Poi da sos_interventi.php: «Ci penso io» -> «Risolta». Controlla lo stato in sos.php, l'email di chiusura e
+       la scheda «Registro».
+    e. Il giro con lo studente («Mando uno studente», «Sto andando», «Risolto» / «Non risolto») si prova solo con un
+       secondo account vero (un collega o uno studente part-time): con «Entra come...» non si preme niente.
+    f. CANCELLA la segnalazione finta. Non c'e' un pulsante: si fa dal database (la cronologia va via da sola).
+       Prima guarda che cosa c'e':
+         sudo mysql eventi_dibest_pp -e "SELECT id, codice, descrizione, foto FROM sos_segnalazioni"
+       poi, con il codice giusto:
+         sudo mysql eventi_dibest_pp -e "DELETE FROM sos_segnalazioni WHERE codice = 'SOS-2026-0001'"
+       Se la colonna foto non era vuota, cancella anche quel file in uploads/sos/. Alla fine spegni «Aperto».
+ 6) Verifica dall'esterno (dal tuo computer, rete di Ateneo o VPN):
+      bash strumenti/verifica_sito.sh https://dibest2.unical.it/mydibest_pp
+
+TEMPO 2 - IL SITO VERO (solo se il tempo 1 e' andato bene in ogni parte)
+      DATA=$(date +%Y%m%d_%H%M)
+ A) Copia di sicurezza del database (nome in DB_NAME:  grep '^DB_NAME' /opt/lampp/htdocs/mydibest/.env )
+      sudo mysqldump --single-transaction --no-tablespaces NOME_DATABASE | gzip > ~/db_prima_sos_$DATA.sql.gz
+      gzip -t ~/db_prima_sos_$DATA.sql.gz && ls -lh ~/db_prima_sos_$DATA.sql.gz
+    (il file deve essere grande, non 0 byte: NON andare avanti senza)
+ B) Copia di sicurezza dei file che stai per sostituire (l'avviso di tar sui file nuovi e' normale)
+      cd /opt/lampp/htdocs/mydibest
+      tar tzf ~/aggiornamento_completo.tgz | grep -v '^SHA256SUMS_pacchetto.txt$' > ~/elenco_file_$DATA.txt
+      tar czf ~/backup_file_prima_$DATA.tgz --ignore-failed-read -T ~/elenco_file_$DATA.txt
+ C) Estrai il pacchetto
+      tar xzf ~/aggiornamento_completo.tgz -C /opt/lampp/htdocs/mydibest --exclude=SHA256SUMS_pacchetto.txt
+      tar xzf ~/aggiornamento_completo.tgz -C ~/ SHA256SUMS_pacchetto.txt
+ D) CONTROLLO SHA256SUMS: nessun file mancante o diverso (deve finire con TUTTO_OK)
+      cd /opt/lampp/htdocs/mydibest && sha256sum -c --quiet ~/SHA256SUMS_pacchetto.txt && echo TUTTO_OK
+ E) Sintassi con il PHP del server (nessuna riga di errore, poi FINE_CONTROLLO)
+      cd /opt/lampp/htdocs/mydibest && for f in $(awk '{f=$2; sub(/^\*/,"",f); print f}' ~/SHA256SUMS_pacchetto.txt | grep '\.php$'); do /opt/php84/bin/php -l "$f"; done | grep -v '^No syntax errors'; echo FINE_CONTROLLO
+ F) Permessi
+      cd /opt/lampp/htdocs/mydibest && awk '{f=$2; sub(/^\*/,"",f); print f}' ~/SHA256SUMS_pacchetto.txt | xargs chmod 644
+ G) OPcache subito
+      sudo systemctl reload php84-fpm
+ H) Apri https://dibest2.unical.it/mydibest/admin/ : lo schema passa alla v147 (la migrazione parte da qui). Poi:
+      sudo mysql NOME_DATABASE -e "SHOW TABLES LIKE 'sos\_%'; SELECT sos_aperto FROM impostazioni_sistema WHERE id=1; SELECT (SELECT COUNT(*) FROM sos_tipi) AS tipi, (SELECT COUNT(*) FROM sos_esiti) AS esiti"
+    Devono esserci 7 tabelle sos_*, sos_aperto deve essere 0, tipi 9 ed esiti 5.
+ I) Cartella delle foto: stessi comandi del tempo 1 punto 4, con /opt/lampp/htdocs/mydibest e l'indirizzo
+    https://dibest2.unical.it/mydibest/uploads/sos/_prova.txt (deve rispondere 403).
+ L) Notifiche sul telefono: le chiavi devono esserci nel .env (risponde 1, senza mostrarle):
+      sudo grep -c '^PUSH_VAPID_PUBLIC=.' /opt/lampp/htdocs/mydibest/.env
+    Se risponde 0 le email partono lo stesso, ma il pulsante «Attiva le notifiche» non compare: dimmelo.
+ M) Verifica:  bash strumenti/verifica_sito.sh https://dibest2.unical.it/mydibest
+
+DOPO IL CARICAMENTO, DAL PANNELLO (sito vero, nell'ordine; Amministrazione -> SOS aule)
+ 1) LE 8 AULE DELLA BOZZA, scheda «Aule»: 5B2, 5B3, 5C1, 5C2, 5C3, 5C4, B5 e B6 (queste due al cubo 4D). Per ognuna scrivi
+    nome ed edificio come devono comparire sul cartello.
+ 2) REFERENTI, scheda «Persone»: per ogni aula, cercati nell'anagrafe di Ateneo.
+ 3) RISERVA, stessa scheda: i responsabili di riserva.
+ 4) STUDENTI part-time, stessa scheda: nome, cognome, email @studenti.unical.it, dal/al.
+    Risolvi gli avvisi in rosso. Referenti, riserva e studenti devono entrare ALMENO UNA VOLTA nel portale con le
+    credenziali di Ateneo: un referente mai entrato riceve l'email ma non puo' prendere in carico, e la riserva in quel
+    caso non viene avvisata. Di' loro di aprire sos_interventi.php dal telefono e premere «Attiva le notifiche su questo
+    telefono».
+ 5) Scheda «Impostazioni», SENZA ancora accendere: telefono di riserva (va scritto prima di stampare: compare sul
+    cartello), orari di presidio, chi puo' inviare, minuti dei promemoria, giorni di conservazione delle foto. Se serve,
+    scheda «Modulo» (campi, tipi di problema, esiti).
+ 6) CARTELLI: «Stampa i cartelli di tutte le aule» DAL SITO VERO, stampa e affiggi. Prova con il telefono il QR di almeno
+    un'aula. Se in seguito premi «Rigenera il QR», il cartello di quell'aula va ristampato.
+ 7) DIDACTICUS: Pannello -> Didacticus -> Importa: documentazione/didacticus_voci_sos_aule_28112026.csv (sette voci nuove,
+    dal tuo computer). Le voci nuove nascono con pubblico «Studenti»: aprile e metti «Docenti e personale» a tutte tranne
+    «Sono uno studente part-time: come vedo gli interventi in aula?».
+ 8) ACCENDI il modulo: «Impostazioni» -> «Aperto».
+ 9) MICROSOFT FORMS: spegnilo (non accetta piu' risposte) il giorno in cui i cartelli sono affissi, che e' lo stesso in cui
+    accendi il modulo.
+
+DA SAPERE
+ - In Sistema -> Salute del sito il compito cron_sos resta ROSSO («mai girato») fino al primo giro del cron (ogni 15
+   minuti). Nella copia di prova i cron non girano: li' resta rosso.
+ - Il promemoria per le segnalazioni non prese in carico parte al primo giro del cron dopo i minuti scelti: arriva fino a
+   15 minuti dopo. L'avviso immediato (email e notifica) parte invece subito all'invio.
+ - Codice su GitHub (dal tuo computer):  git push tutti main
+
+COME TORNARE INDIETRO NEL SITO VERO
+ 0) Se il problema e' solo in SOS aule: spegni «Aperto» nelle Impostazioni, togli i cartelli e riapri il Microsoft Forms.
+ 1) I FILE (lo schema nuovo e' solo aggiunto):
+      cd /opt/lampp/htdocs/mydibest && tar xzf ~/backup_file_prima_$DATA.tgz
+    I file nuovi che prima non c'erano si vedono con:
+      tar tzf ~/backup_file_prima_$DATA.tgz | sort > ~/gia_presenti_$DATA.txt; sort ~/elenco_file_$DATA.txt | comm -13 ~/gia_presenti_$DATA.txt -
+    (si tolgono a mano), poi:  sudo systemctl reload php84-fpm
+    Le tabelle sos_*, la cartella uploads/sos e i marcatori cache/schema_v147_*.ok possono restare.
+ 2) IL DATABASE solo se serve (CANCELLA le modifiche fatte dopo la copia: chiedimi prima):
+      gunzip -c ~/db_prima_sos_$DATA.sql.gz | sudo mysql NOME_DATABASE

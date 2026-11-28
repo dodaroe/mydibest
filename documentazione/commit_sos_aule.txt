@@ -1,0 +1,63 @@
+# I due comandi, dalla cartella del portale (le righe che iniziano con # non entrano nel messaggio).
+# Il primo e' tutto su UNA riga, con i 94 file uno per uno: si copia senza il «#» iniziale.
+#
+#   git add admin/admin_header.php admin/amministrazione_home.php admin/inizio.php admin/sos_aule.php admin/sos_cartello.php assets/css/portale-ui.css assets/js/campi-pratica.js assets/js/conferma.js cron_background.php documentazione/commit_sos_aule.txt documentazione/didacticus_voci_sos_aule_28112026.csv documentazione/inventario_accessi.md documentazione/istruzioni_aggiornamento_sos_aule.txt documentazione/mappa/pubblico.html documentazione/mappa/tecnica.html documentazione/sos_aule_stato.md inc/area/_permessi_lavoro.php inc/area/lavoro.php inc/area/segnalazioni_sos.php inc/sezioni.php inc/ui.php sos.php sos_interventi.php src/Amministrazione/CoseDaFareAmministrazione.php src/Core/Schema/Definizioni.php src/Core/Schema/Migrazioni.php src/Email/CatalogoEmail.php src/Email/CatalogoSos.php src/Portale/Area/CatalogoRiquadri.php src/Portale/Area/PostazioniLavoro.php src/Portale/GuidePerRuolo.php src/Portale/Instradamento/Rotte.php src/Portale/Pagine/AzioniSosPannello.php src/Portale/Pagine/PaginaSos.php src/Portale/Pagine/PaginaSosCartello.php src/Portale/Pagine/PaginaSosInterventi.php src/Portale/Pagine/PaginaSosPannello.php src/Portale/Pagine/RegistroSosPannello.php src/Portale/Pannello/MenuModuli.php src/Portale/Pannello/PermessiPagine.php src/Sistema/SaluteSito.php src/Sistema/StatoCron.php src/SosAule/AuleRepository.php src/SosAule/CampiSos.php src/SosAule/CodaInterventi.php src/SosAule/Costanti.php src/SosAule/CronSos.php src/SosAule/EsitoInvio.php src/SosAule/FotoSos.php src/SosAule/ImpostazioniSos.php src/SosAule/NotificheSos.php src/SosAule/NumeriSos.php src/SosAule/PersoneSos.php src/SosAule/RegoleSos.php src/SosAule/SegnalazioniRepository.php src/SosAule/ServizioSos.php src/SosAule/TipiRepository.php src/SosAule/VociDiPartenza.php strumenti/crea_ambiente_prova.sh strumenti/mappa/mappa_pubblica.py strumenti/mappa/mappa_tecnica.py strumenti/mappa_accessi.php strumenti/prove/oop/area_personale.php strumenti/prove/oop/pagine_sos.php tests/Integration/Portale/PaginaSosBase.php tests/Integration/Portale/PaginaSosCartelloTest.php tests/Integration/Portale/PaginaSosInterventiTest.php tests/Integration/Portale/PaginaSosPannelloTest.php tests/Integration/Portale/PaginaSosTest.php tests/Integration/SosAule/CronSosTest.php tests/Integration/SosAule/NotificheSosTest.php tests/Integration/SosAule/ServizioSosTest.php tests/Unit/Http/VistaTest.php tests/Unit/Sistema/SaluteSitoTest.php tests/Unit/SosAule/NumeriSosTest.php tests/Unit/SosAule/RegoleSosTest.php viste/pannello/_sos_aule.php viste/pannello/_sos_campo_aggiunto.php viste/pannello/_sos_impostazioni.php viste/pannello/_sos_modulo.php viste/pannello/_sos_persona.php viste/pannello/_sos_persone.php viste/pannello/_sos_registro.php viste/pannello/_sos_studente.php viste/pannello/_sos_voce.php viste/pannello/sos_aule.php viste/pannello/sos_cartello.php viste/pubblico/_sos_card.php viste/pubblico/_sos_form.php viste/pubblico/_sos_interventi_elenco.php viste/pubblico/_sos_mie.php viste/pubblico/_sos_stato.php viste/pubblico/sos.php viste/pubblico/sos_interventi.php
+#
+#   git commit --cleanup=strip -F documentazione/commit_sos_aule.txt
+#
+# Poi controlla con git status: devono restare fuori solo i file elencati in fondo, sotto «Non inclusi».
+
+SOS aule: richiesta di aiuto dal QR in aula, referenti e studenti part-time, registro
+
+Schema v147 (solo aggiunte). Il modulo nasce spento: finché non si configura e non si accende dal pannello, per chi usa
+il portale non cambia niente, salvo «Il mio lavoro» anche al profilo studente (dove i profili non erano stati cambiati).
+
+S1, tabelle e iter. Aule, referenti, studenti, tipi di problema, esiti, segnalazioni e cronologia in src/SosAule/.
+Ogni passaggio di stato è un solo UPDATE condizionato allo stato di partenza: chi arriva secondo sa chi l'ha preceduto.
+La tabella delle transizioni dice chi può fare cosa.
+
+S2, configurazione e cartello. admin/sos_aule.php (Amministrazione) con le schede Aule, Persone, Modulo e Impostazioni;
+il codice del QR si può rigenerare; admin/sos_cartello.php stampa un cartello A4 per aula.
+
+S3, schizzi delle due pagine da telefono, approvati prima di scrivere le pagine.
+
+S4, pagina di chi chiede aiuto (sos.php). Dal QR con l'aula già scelta, avviso di doppione e di fuori orario, stato che
+si aggiorna da solo, note, annullamento, «Non è risolto» entro 24 ore. Email e notifiche ai referenti e al docente;
+tessera «Le mie segnalazioni SOS».
+
+S5, pagina di chi interviene (sos_interventi.php). Referenti, riserva e studenti, ciascuno con le sole segnalazioni sue:
+presa in carico, affidamento, «Sto andando», risolta o non risolta con i minuti, inoltro e chiusura. Postazione in
+«Il mio lavoro» e voce tra le cose da fare dell'amministratore per le non risolte ferme.
+
+S6, registro e cron. Filtri, numeri del periodo, aule con guasti ripetuti, minuti degli studenti per mese, scarichi Excel,
+PDF e CSV; promemoria una sola volta, cancellazione delle foto vecchie, riga cron_sos in Salute del sito.
+
+S7, rifiniture. Quattro guide, mappe, inventario degli accessi, voci di Didacticus, giro completo via HTTP nelle prove.
+
+Correzioni dopo le revisioni. Si salva solo l'email verificata; i minuti restano in cronologia per ogni intervento; lo
+studente da «Affidata» ha solo «Sto andando»; un collega può aggiungere una nota a una segnalazione aperta della stessa
+aula; avvisi per «Non è risolto», annullamento e intervento tolto allo studente; insegnamento e campi aggiunti sulle card;
+nel registro la foto e il nome degli studenti tolti dall'elenco.
+
+S8, copia di prova e server. La copia di prova non copia le foto delle segnalazioni e, con --anonimizza, rende anonimi i
+dati di segnalazioni, cronologia, studenti e referenti. Allineate due prove dell'area personale a S5. Istruzioni per il
+caricamento.
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Non inclusi (decidi tu: cambiati o nuovi, ma non sono di SOS aule, oppure restano fuori come nei commit precedenti)
+#   .gitignore                                   (righe __pycache__: era gia' cambiato prima di SOS aule)
+#   documentazione/PASSAGGIO_GATEWAY.txt
+#   documentazione/RIPRENDI_DA_QUI.md
+#   documentazione/mappa/.htaccess
+#   documentazione/prova_titulus/
+#   documentazione/schermate_passo8/
+#   documentazione/schermate_passo9/
+#   documentazione/schermate_pubblicazioni_P1/ ... P6/
+#   documentazione/schizzo_compila_pubblicazioni.html
+#   documentazione/schizzo_pagina_scuole.html
+#   documentazione/schizzo_sos_docente.html      (schizzo di SOS aule: lasciato fuori per tua scelta)
+#   documentazione/schizzo_sos_interventi.html   (schizzo di SOS aule: lasciato fuori per tua scelta)
+#   strumenti/locale/copia_ambiente.ps1
+#   strumenti/locale/ripristina_ambiente.ps1
+# Le schermate documentazione/schermate_sos_S*/ sono ignorate da git; il piano documentazione/piano_sos_aule_sonnet.md
+# e' escluso da .gitignore come gli altri piani.

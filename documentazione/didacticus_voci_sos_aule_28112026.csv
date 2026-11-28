@@ -1,0 +1,53 @@
+﻿Argomento;Titolo;Domande;Parole chiave;Risposta;Link (etichetta|indirizzo);Attiva;Usi;Utile;Non utile;Propone operatore;Solo con accesso
+altro;Ho un problema in aula: a chi lo segnalo?;"Ho un problema in aula
+Come chiedo assistenza durante la lezione
+Chi chiamo se in aula qualcosa non funziona
+Come uso il QR in aula
+SOS aula";aula, sos, assistenza, lezione, problema, guasto, QR, cartello, aiuto, tecnico;"Inquadra con il telefono il **QR sul cartello dell'aula**, entra con le credenziali di Ateneo, scegli il tipo di problema e l'urgenza e premi **«Invia la richiesta di aiuto»**. La richiesta arriva subito a chi segue quell'aula.
+
+Senza cartello puoi aprire la pagina e scegliere l'aula dall'elenco. Se il telefono non prende, o il servizio non è attivo, chiama il **numero di riserva** scritto sul cartello.";"Chiedi aiuto per l'aula|sos.php
+Come si fa: SOS aula|guida.php?r=sos";sì;0;0;0;no;sì
+altro;Il proiettore in aula non va: cosa faccio?;"Il proiettore non va
+Non si vede niente sullo schermo
+Il computer dell'aula non si accende
+Non riesco a collegare il mio portatile
+Il microfono non funziona";proiettore, schermo, computer, PC, HDMI, adattatore, portatile, audio, microfono, rete, Wi-Fi, aula;"Segnalalo con **SOS aula**: inquadra il QR del cartello e scegli il tipo di problema (proiettore o schermo, PC dell'aula, collegare il portatile, audio, rete…). Se non puoi andare avanti indica **«La lezione è ferma»**.
+
+Una foto del cavo o del messaggio di errore aiuta chi interviene a portare la cosa giusta.";"Chiedi aiuto per l'aula|sos.php
+Come si fa: SOS aula|guida.php?r=sos";sì;0;0;0;no;sì
+altro;Ho trovato l'aula chiusa o manca il materiale: come lo segnalo?;"L'aula è chiusa
+Mancano le chiavi dell'aula
+Manca il gesso
+Servono pennarelli o batterie
+Le luci o il riscaldamento non funzionano";aula chiusa, chiavi, gesso, pennarelli, batterie, telecomando, luci, riscaldamento, materiale;Anche questi si segnalano con **SOS aula**: inquadra il QR del cartello (se non ci arrivi, apri la pagina e scegli l'aula dall'elenco) e tocca il tipo di problema. Con **«Altro»** scrivi che cosa succede.;"Chiedi aiuto per l'aula|sos.php
+Come si fa: SOS aula|guida.php?r=sos";sì;0;0;0;no;sì
+altro;Ho inviato la richiesta SOS: cosa succede adesso?;"Come faccio a sapere se arriva qualcuno
+Dove vedo lo stato della mia segnalazione
+Ho risolto da solo, come annullo
+Il problema c'è ancora dopo la chiusura
+Posso aggiungere una nota alla segnalazione";stato, segnalazione, sos, annulla, nota, non è risolto, email, attesa;"La pagina della segnalazione si aggiorna da sola e dice chi se ne occupa. La ritrovi anche nell'**Area personale**, tessera **«Le mie segnalazioni SOS»**.
+
+Finché è aperta puoi aggiungere una nota o premere **«Annulla, ho risolto da solo»**. Alla chiusura ricevi una email; se è segnata risolta ma il problema c'è ancora, entro 24 ore premi **«Non è risolto»**.";"Le mie segnalazioni SOS|sos.php
+Come si fa: SOS aula|guida.php?r=sos";sì;0;0;0;no;sì
+altro;Come faccio a diventare referente di un'aula per SOS aule?;"Come divento referente di un'aula
+Chi decide i referenti delle aule
+Non ricevo le segnalazioni della mia aula
+Dove vedo le segnalazioni da gestire
+Chi sono i responsabili di riserva";referente, aula, personale tecnico, riserva, segnalazioni, interventi, sos;"I referenti li indica chi gestisce il modulo **Amministrazione**, scegliendoli dall'anagrafe di Ateneo: non ci si iscrive da soli. Chiedi a chi cura SOS aule.
+
+Una volta indicato entra nel portale con le credenziali di Ateneo: nell'**Area personale**, «Il mio lavoro», trovi la tessera **«SOS aule»**.";"Segnalazioni da gestire|sos_interventi.php
+Come si fa: il referente|guida.php?r=sos_referente";sì;0;0;0;no;sì
+altro;Sono uno studente part-time: come vedo gli interventi in aula?;"Dove vedo gli interventi che mi hanno affidato
+Studente part-time SOS aule
+Come segno che ho risolto
+Come segno i minuti dell'intervento
+Non vedo la tessera SOS aule";studente, part-time, collaborazione, intervento, sto andando, risolto, minuti, sos;"Il Dipartimento deve averti inserito con la tua email **@studenti.unical.it** e il periodo della collaborazione: accedi con quella e apri nell'**Area personale** la tessera **«SOS aule»**.
+
+Premi **«Sto andando»**, poi **«Risolto»** oppure **«Non risolto»** (con che cosa non ha funzionato). Se non vedi la tessera, chiedi a chi gestisce SOS aule di controllare email e date.";"I miei interventi|sos_interventi.php
+Come si fa: studente part-time|guida.php?r=sos_studente";sì;0;0;0;no;sì
+altro;Come si prepara e si accende il modulo SOS aule?;"Come aggiungo un'aula in SOS aule
+Come stampo i cartelli con il QR
+Come aggiungo i referenti e gli studenti
+Come attivo SOS aule
+Perché SOS aule non si accende";sos, amministrazione, aule, referenti, cartelli, QR, accendere, impostazioni, registro;"In **Amministrazione, SOS aule** prepara nell'ordine: aule, persone (referenti, riserva, studenti), modulo e impostazioni; poi stampa i cartelli e accendi **«Aperto»**. Il modulo nasce spento e non si accende se nessuno riceverebbe le segnalazioni.";"SOS aule nel pannello|admin/sos_aule.php
+Come si fa: preparare SOS aule|guida.php?r=sos_gestione";sì;0;0;0;no;sì
