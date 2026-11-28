@@ -587,6 +587,8 @@ if ($id > 0 && !$p) {
     $pubblicate_anno = count(array_filter($nel_file, fn($r) => $r['stato'] === 'pubblicata' && substr((string)$r['data_evento'], 0, 4) === $anno));
 
     $azioni = '<a class="btn btn-outline-secondary btn-sm" href="' . ($puo_amministrazione ? 'amministrazione.php?tab=impostazioni' : 'pubblicazioni.php?vista=impostazioni') . '"><i class="fa fa-gear me-1" aria-hidden="true"></i>Impostazioni</a>';
+    // «Impostazioni» e «Campi e colonne» non hanno una voce nel menu a sinistra: ci si arriva da qui (Campi e colonne solo chi ha tutto il modulo)
+    if ($puo_amministrazione) $azioni .= ' <a class="btn btn-outline-secondary btn-sm" href="amministrazione.php?tab=campi"><i class="fa fa-table-list me-1" aria-hidden="true"></i>Campi e colonne</a>';
     $frase = $vista !== 'da_compilare'
         ? 'Le richieste di docenti e personale di pubblicare su sito e social. Una richiesta entra nella tabella di monitoraggio (il file Excel) quando premi «Invia al file Excel».'
         : ($col_viste !== null ? 'Compila le colonne assegnate a te nelle richieste che sono nel file Excel.' : 'Compila le colonne degli operatori nelle richieste che sono nel file Excel.');

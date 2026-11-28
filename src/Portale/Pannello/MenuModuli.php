@@ -95,9 +95,6 @@ final class MenuModuli
             ['id' => 'cose', 'href' => 'amministrazione.php?tab=home', 'icona' => 'fa-list-check', 'testo' => 'Cosa devo fare', 'permessi' => ['puo_amm_entrare'], 'pagine' => [], 'a_mano' => true],
             ['id' => 'modulistica', 'href' => 'amministrazione.php?tab=modulistica', 'icona' => 'fa-file-lines', 'testo' => 'Modulistica', 'permessi' => ['puo_amministrazione'], 'pagine' => [], 'a_mano' => true],
             ['id' => 'pubblicazioni', 'href' => 'pubblicazioni.php?vista=arrivate', 'icona' => 'fa-bullhorn', 'testo' => 'Richieste di pubblicazione', 'permessi' => ['puo_pubblicazioni'], 'pagine' => ['pubblicazioni.php'], 'a_mano' => true],
-            ['id' => 'da_compilare', 'href' => 'pubblicazioni.php?vista=da_compilare', 'icona' => 'fa-pen-to-square', 'testo' => 'Da compilare', 'permessi' => ['puo_pubblicazioni'], 'pagine' => [], 'a_mano' => true],
-            ['id' => 'impostazioni', 'href' => 'amministrazione.php?tab=impostazioni', 'icona' => 'fa-sliders', 'testo' => 'Impostazioni', 'permessi' => ['puo_amministrazione'], 'pagine' => [], 'a_mano' => true],
-            ['id' => 'campi', 'href' => 'amministrazione.php?tab=campi', 'icona' => 'fa-table-list', 'testo' => 'Campi e colonne', 'permessi' => ['puo_amministrazione'], 'pagine' => [], 'a_mano' => true],
             ['id' => 'sos_aule', 'href' => 'sos_aule.php', 'icona' => 'fa-life-ring', 'testo' => 'SOS aule', 'permessi' => ['puo_amministrazione'], 'pagine' => ['sos_aule.php', 'sos_cartello.php'], 'a_mano' => true],
         ],
         'persone' => [

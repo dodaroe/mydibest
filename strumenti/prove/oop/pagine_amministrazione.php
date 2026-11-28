@@ -328,7 +328,8 @@ $r = $http('/mydibest/admin/amministrazione.php?tab=impostazioni', null, $jar);
 prova($apre($r, 'Richiesta di pubblicazione', 'Chi può inviare la richiesta', 'name="pb_chi_profili[]" value="docenti" checked', 'name="pb_chi_profili[]" value="pta" checked', 'Apertura', 'name="aperta"', 'name="messaggio_chiusa"', 'Testi',
         'name="testo_introduttivo"', 'name="testo_dopo_invio"', 'Limiti', 'name="max_sottotitolo"', 'value="50"', 'name="giorni_minimi"', 'name="allegati_obbligatori"', 'Email', 'name="indirizzi"', 'name="ricevuta_al_richiedente"', 'salva_impostazioni_pubblicazioni')
     && !str_contains($r['corpo'], 'value="anonimi"') && substr_count($r['corpo'], 'name="salva_impostazioni_pubblicazioni"') === 1, "scheda Impostazioni (amministratore): le cinque parti, un solo «Salva», niente «anonimi»");
-prova(str_contains($r['corpo'], 'href="amministrazione.php?tab=impostazioni') && str_contains($r['corpo'], 'Impostazioni'), "scheda Impostazioni: voce nel menu a sinistra");
+prova(preg_match('/class="nav-link w-100 active" href="pubblicazioni\.php\?vista=arrivate[^"]*"[^>]*>(?:(?!<\/a>).)*Richieste di pubblicazione/s', $r['corpo']) === 1 && !str_contains($r['corpo'], 'fa-sliders me-2'),
+    "scheda Impostazioni: niente voce propria nel menu a sinistra, si accende «Richieste di pubblicazione»");
 $tok_a = preg_match('/name="csrf_token" value="([^"]+)"/', $r['corpo'], $ma) ? $ma[1] : '';
 $r = $http('/mydibest/admin/amministrazione.php', null, $jar);
 prova($apre($r, 'amministrazione.php?tab=impostazioni', 'Impostazioni'), "home dell'Amministrazione: «Impostazioni» in «Tutte le sezioni»");
@@ -387,7 +388,8 @@ prova($apre($r, 'Campi del form', 'Colonne del file Excel', 'name="campo[sottoti
         'name="colonna[f_pubblicazione_social][intestazione]"', 'Se cambi le intestazioni, il file scaricato non sarà più uguale alla Tabella di monitoraggio originale.', 'Torna alle intestazioni originali', 'name="salva_campi"', 'name="salva_colonne"')
     && str_contains($r['corpo'], 'name="campo[titolo][visibile]" value="1" checked disabled>') && str_contains($r['corpo'], 'name="colonna[titolo][visibile]" value="1" checked disabled>')
     && !str_contains($r['corpo'], 'name="colonna[titolo][tipo]"') && !preg_match('/name="campo\[sottotitolo\]\[visibile\]"[^>]*disabled/', $r['corpo']), "scheda Campi e colonne (amministratore): le due parti, le regole fisse accanto ai campi, l'avviso e il «Torna alle intestazioni originali»");
-prova(str_contains($r['corpo'], 'amministrazione.php?tab=campi') && str_contains($r['corpo'], 'Campi e colonne'), "scheda Campi e colonne: voce nel menu a sinistra");
+prova(preg_match('/class="nav-link w-100 active" href="pubblicazioni\.php\?vista=arrivate[^"]*"[^>]*>(?:(?!<\/a>).)*Richieste di pubblicazione/s', $r['corpo']) === 1 && !str_contains($r['corpo'], 'fa-table-list me-2'),
+    "scheda Campi e colonne: niente voce propria nel menu a sinistra, si accende «Richieste di pubblicazione»");
 $tok_c = preg_match('/name="csrf_token" value="([^"]+)"/', $r['corpo'], $mc) ? $mc[1] : '';
 $r = $http('/mydibest/admin/amministrazione.php', null, $jar);
 prova($apre($r, 'amministrazione.php?tab=campi', 'Campi e colonne'), "home dell'Amministrazione: «Campi e colonne» in «Tutte le sezioni»");
@@ -617,8 +619,13 @@ prova(in_array($r['codice'], [302, 303], true) && str_contains($r['dove'], 'saml
 // Il numero della voce «Da compilare» nel menu a sinistra e nella home è quello di contaDaFare
 $atteso7 = $da_compilare_db();
 $r = $http($u7, null, $j_r7);
-prova($atteso7 >= 2 && preg_match('/href="pubblicazioni\.php\?vista=da_compilare[^"]*"[^>]*>(?:(?!<\/a>).)*Da compilare(?:(?!<\/a>).)*<span class="side-num"[^>]*>(\d+)<\/span><\/a>/s', $r['corpo'], $mn) === 1 && (int) $mn[1] === $atteso7,
-    "menu a sinistra: «Da compilare» col numero di righe da completare (uguale a contaDaFare)", "atteso $atteso7, trovato " . ($mn[1] ?? '—'));
+prova($atteso7 >= 2 && preg_match('/class="pn-scheda[^"]*" href="pubblicazioni\.php\?vista=da_compilare[^"]*"[^>]*>(?:(?!<\/a>).)*Da compilare(?:(?!<\/a>).)*<span class="pn-num[^"]*">(\d+)<\/span><\/a>/s', $r['corpo'], $mn) === 1 && (int) $mn[1] === $atteso7
+    && !str_contains($r['corpo'], 'fa-pen-to-square me-2'),
+    "«Da compilare»: scheda della pagina delle richieste col numero di righe da completare (uguale a contaDaFare), niente voce nel menu a sinistra", "atteso $atteso7, trovato " . ($mn[1] ?? '—'));
+$r = $http('/mydibest/admin/pubblicazioni.php?vista=arrivate', null, $jar);
+prova($apre($r, 'href="amministrazione.php?tab=campi"', 'Campi e colonne'), "pagina delle richieste (chi ha tutto il modulo): pulsante «Campi e colonne» nella testata");
+$r = $http('/mydibest/admin/pubblicazioni.php?vista=arrivate', null, $j_r7);
+prova($apre($r) && !str_contains($r['corpo'], 'tab=campi'), "pagina delle richieste (solo richieste): niente pulsante «Campi e colonne»");
 $r = $http('/mydibest/admin/amministrazione.php', null, $j_r7);
 prova($apre($r, 'pubblicazioni.php?vista=da_compilare', 'Da compilare') && preg_match('/(\d+) righ[ae] del file Excel (?:ha|hanno) celle vuote/', $r['corpo'], $mh) === 1 && (int) $mh[1] === $atteso7,
     "home dell'Amministrazione (anche per chi ha solo le richieste): voce «Da compilare» con lo stesso numero", "atteso $atteso7, trovato " . ($mh[1] ?? '—'));

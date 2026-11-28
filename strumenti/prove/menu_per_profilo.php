@@ -62,8 +62,7 @@ function menu_prima(array $p, array $moduli_area): array
     if (isset($m['amministrazione'])) {
         $v = ['Cosa devo fare'];
         if ($p['puo_amministrazione']) { $v[] = 'Modulistica'; }
-        if ($p['puo_pubblicazioni']) { array_push($v, 'Richieste di pubblicazione', 'Da compilare'); }
-        if ($p['puo_amministrazione']) { array_push($v, 'Impostazioni', 'Campi e colonne'); }
+        if ($p['puo_pubblicazioni']) { $v[] = 'Richieste di pubblicazione'; } // «Da compilare», «Impostazioni» e «Campi e colonne» stanno dentro le richieste
         $out['amministrazione'] = $v;
     }
     if (isset($m['portale'])) {

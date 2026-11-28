@@ -480,25 +480,19 @@ $colore_lato = ['sistema' => '#64748b', 'persone' => '#818cf8', 'sito' => '#e879
                 <?php endif; ?>
 
                 <?php if ($modulo_corrente === 'amministrazione' && $puo_amm_entrare): ?>
-                    <?php // Le voci per chi può tutto (Modulistica, Impostazioni…) si aggiungono qui, con la loro scheda di amministrazione.php (SCHEDE_AMMINISTRAZIONE)
+                    <?php // Le voci per chi può tutto (Modulistica, SOS aule…) si aggiungono qui, con la loro scheda di amministrazione.php (SCHEDE_AMMINISTRAZIONE)
                     $tab_amm = $current_page === 'amministrazione.php' ? ($puo_amministrazione && in_array($_GET['tab'] ?? '', ['modulistica', 'impostazioni', 'campi'], true) ? (string)$_GET['tab'] : 'home') : '';
                     $n_pubblicazioni_menu = 0;
-                    $n_da_compilare_menu = 0; // righe del file Excel con celle vuote: lo stesso numero di «Cosa devo fare» (CoseDaFareAmministrazione)
                     try {
                         if ($puo_pubblicazioni) {
-                            $cose_pb_menu = \App\Core\App::get(\App\Amministrazione\CoseDaFareAmministrazione::class)->pubblicazioni($utente_admin);
-                            $n_pubblicazioni_menu = $cose_pb_menu['ricevute'];
-                            $n_da_compilare_menu = $cose_pb_menu['da_completare'];
+                            $n_pubblicazioni_menu = \App\Core\App::get(\App\Amministrazione\CoseDaFareAmministrazione::class)->pubblicazioni($utente_admin)['ricevute'];
                         }
                     } catch (\Throwable $e) { error_log('Menu, richieste di pubblicazione: ' . $e->getMessage()); }
-                    // «Da compilare» è una vista di pubblicazioni.php: lì la voce delle richieste non si accende (la scheda di una richiesta e le altre viste sì)
-                    $in_da_compilare = $current_page === 'pubblicazioni.php' && ($_GET['vista'] ?? '') === 'da_compilare' && empty($_GET['id']) && !isset($_GET['nuova']);
                     $voce_menu([], 'amministrazione.php?tab=home', 'fa-list-check', 'Cosa devo fare', $tab_amm === 'home');
                     if ($puo_amministrazione) $voce_menu([], 'amministrazione.php?tab=modulistica', 'fa-file-lines', 'Modulistica', $tab_amm === 'modulistica');
-                    if ($puo_pubblicazioni) $voce_menu([], 'pubblicazioni.php?vista=arrivate', 'fa-bullhorn', 'Richieste di pubblicazione', $current_page === 'pubblicazioni.php' && !$in_da_compilare, $n_pubblicazioni_menu);
-                    if ($puo_pubblicazioni) $voce_menu([], 'pubblicazioni.php?vista=da_compilare', 'fa-pen-to-square', 'Da compilare', $in_da_compilare, $n_da_compilare_menu);
-                    if ($puo_amministrazione) $voce_menu([], 'amministrazione.php?tab=impostazioni', 'fa-sliders', 'Impostazioni', $tab_amm === 'impostazioni');
-                    if ($puo_amministrazione) $voce_menu([], 'amministrazione.php?tab=campi', 'fa-table-list', 'Campi e colonne', $tab_amm === 'campi');
+                    // «Da compilare» (scheda di pubblicazioni.php), «Impostazioni» e «Campi e colonne» (pulsanti nella sua testata) sono parti delle richieste:
+                    // niente voce propria, si accende quella delle richieste
+                    if ($puo_pubblicazioni) $voce_menu([], 'pubblicazioni.php?vista=arrivate', 'fa-bullhorn', 'Richieste di pubblicazione', $current_page === 'pubblicazioni.php' || in_array($tab_amm, ['impostazioni', 'campi'], true), $n_pubblicazioni_menu);
                     if ($puo_amministrazione) $voce_menu(['sos_aule.php', 'sos_cartello.php'], 'sos_aule.php', 'fa-life-ring', 'SOS aule'); ?>
                 <?php endif; ?>
 
